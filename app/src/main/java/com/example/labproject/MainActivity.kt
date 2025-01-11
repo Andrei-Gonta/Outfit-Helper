@@ -2,6 +2,7 @@ package com.example.labproject
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
@@ -9,23 +10,15 @@ import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.labproject.activities.AddToDoActivity
+import com.example.labproject.activities.DisplayToDoActivity
+import com.example.labproject.activities.TaskActivity
 import com.example.labproject.adapter.RecycleViewAdapter
-import com.example.labproject.ui.theme.LabProjectTheme
 import com.example.labproject.utils.RetrofitInstance
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -67,7 +60,17 @@ class MainActivity : AppCompatActivity() {
         dialog.setContentView(sheetLayoutBinding.root)
         setContentView(binding.root)
 
+        binding.btnAddTodo.setOnClickListener {
+            // Create an Intent to launch AddToDoActivity
+            val intent = Intent(this, AddToDoActivity::class.java)
+            // Start the activity
+            startActivity(intent)
+        }
 
+        binding.btnDisplaySchedule.setOnClickListener {
+            val intent = Intent(this, TaskActivity::class.java)
+            startActivity(intent)
+        }
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 

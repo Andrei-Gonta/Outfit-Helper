@@ -175,6 +175,18 @@
             app:layout_constraintStart_toStartOf="@+id/tv_temp"
             app:layout_constraintTop_toBottomOf="@+id/tv_temp" />
 
+        <Button
+            android:id="@+id/btnDisplaySchedule"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Display Schedule"
+            tools:layout_editor_absoluteY="181dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.Guideline
@@ -493,4 +505,15 @@
         app:layout_constraintTop_toTopOf="parent">
 
     </FrameLayout>
+
+    <Button
+        android:id="@+id/btnAddTodo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add To-Do"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
