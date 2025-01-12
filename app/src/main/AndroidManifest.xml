@@ -17,13 +17,10 @@
         android:theme="@style/Theme.LabProject"
         tools:targetApi="31">
         <activity
+            android:name=".activities.DisplayClothesActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.TaskActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.DisplayToDoActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.AddToDoActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
