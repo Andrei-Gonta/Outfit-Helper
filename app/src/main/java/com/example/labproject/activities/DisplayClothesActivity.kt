@@ -160,18 +160,20 @@ class DisplayClothesActivity : AppCompatActivity() {
                 clothingItemBinding.clothingItemRV.layoutManager = LinearLayoutManager(
                     this, LinearLayoutManager.VERTICAL,false
                 )
-                clothingItemBinding.listOrGridImg.setImageResource(R.drawable.ic_view_module)
+                //clothingItemBinding.sortImg.setImageResource(R.drawable.ic_view_module)
             }else{
                 clothingItemBinding.clothingItemRV.layoutManager = StaggeredGridLayoutManager(
                     2, LinearLayoutManager.VERTICAL
                 )
-                clothingItemBinding.listOrGridImg.setImageResource(R.drawable.ic_view_list)
+               // clothingItemBinding.sortImg.setImageResource(R.drawable.ic_view_list)
             }
         }
+        /*
+                clothingItemBinding.listOrGridImg.setOnClickListener {
+                    isListMutableLiveData.postValue(!isListMutableLiveData.value!!)
+                }
+                */
 
-        clothingItemBinding.listOrGridImg.setOnClickListener {
-            isListMutableLiveData.postValue(!isListMutableLiveData.value!!)
-        }
 
         val clothingItemRVVBListAdapter = ClothingItemRVVBListAdapter(isListMutableLiveData ) { type, position, clothingItem ->
             if (type == "delete") {
@@ -290,7 +292,7 @@ class DisplayClothesActivity : AppCompatActivity() {
 
     private fun callSortByDialog() {
         var checkedItem = 0   // 2 is default item set
-        val items = arrayOf("Title Ascending", "Title Descending","Date Ascending","Date Descending")
+        val items = arrayOf("Name Ascending", "Name Descending",)
 
         clothingItemBinding.sortImg.setOnClickListener {
             MaterialAlertDialogBuilder(this)
@@ -298,16 +300,11 @@ class DisplayClothesActivity : AppCompatActivity() {
                 .setPositiveButton("Ok") { _, _ ->
                     when (checkedItem) {
                         0 -> {
-                            clothingItemViewModel.setSortBy(Pair("title",true))
+                            clothingItemViewModel.setSortBy(Pair("name",true))
                         }
-                        1 -> {
-                            clothingItemViewModel.setSortBy(Pair("title",false))
-                        }
-                        2 -> {
-                            clothingItemViewModel.setSortBy(Pair("date",true))
-                        }
+
                         else -> {
-                            clothingItemViewModel.setSortBy(Pair("date",false))
+                            clothingItemViewModel.setSortBy(Pair("name",false))
                         }
                     }
                 }

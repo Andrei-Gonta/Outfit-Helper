@@ -32,7 +32,8 @@ class TaskRVVBListAdapter(
 
             val dateFormat = SimpleDateFormat("dd-MMM-yyyy HH:mm:ss ", Locale.getDefault())
 
-            viewTaskListLayoutBinding.dateTxt.text = dateFormat.format(task.date)
+            viewTaskListLayoutBinding.dateStartTxt.text = dateFormat.format(task.starttime)
+            viewTaskListLayoutBinding.dateEndTxt.text = dateFormat.format(task.endtime)
 
             viewTaskListLayoutBinding.deleteImg.setOnClickListener {
                 if (adapterPosition != -1) {
@@ -58,9 +59,11 @@ class TaskRVVBListAdapter(
             viewTaskGridLayoutBinding.titleTxt.text = task.title
             viewTaskGridLayoutBinding.descrTxt.text = task.description
 
+
             val dateFormat = SimpleDateFormat("dd-MMM-yyyy HH:mm:ss a", Locale.getDefault())
 
-            viewTaskGridLayoutBinding.dateTxt.text = dateFormat.format(task.date)
+            viewTaskGridLayoutBinding.dateStartTxt.text = dateFormat.format(task.starttime)
+            viewTaskGridLayoutBinding.dateEndTxt.text = dateFormat.format(task.endtime)
 
             viewTaskGridLayoutBinding.deleteImg.setOnClickListener {
                 if (adapterPosition != -1) {

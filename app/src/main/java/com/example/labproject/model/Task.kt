@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 import java.util.Date
 
 
-@Entity()
+@Entity
 data class Task(
 
     @PrimaryKey(autoGenerate = false)
@@ -13,6 +13,7 @@ data class Task(
     val id: String,
     val title: String,
     val description: String,
-    val date: Date,
+    val starttime: Date,
+    val endtime: Date,
     //location = outdoor : boolean
 )

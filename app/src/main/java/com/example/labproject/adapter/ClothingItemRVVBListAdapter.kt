@@ -46,46 +46,22 @@ class ClothingItemRVVBListAdapter(
     }
 
 
-    class GridClothingViewHolder(private val viewClothingGridLayoutBinding: ViewClothingGridLayoutBinding) :
-        RecyclerView.ViewHolder(viewClothingGridLayoutBinding.root) {
-
-        fun bind(
-            clothingItem: ClothingItem,
-            deleteUpdateCallback: (type: String, position: Int, clothingItem: ClothingItem) -> Unit,
-        ) {
-            viewClothingGridLayoutBinding.nameTxt.text = clothingItem.name
-           
-
-            val dateFormat = SimpleDateFormat("dd-MMM-yyyy HH:mm:ss a", Locale.getDefault())
-
-
-            viewClothingGridLayoutBinding.deleteImg.setOnClickListener {
-                if (adapterPosition != -1) {
-                    deleteUpdateCallback("delete", adapterPosition, clothingItem)
-                }
-            }
-            viewClothingGridLayoutBinding.editImg.setOnClickListener {
-                if (adapterPosition != -1) {
-                    deleteUpdateCallback("update", adapterPosition, clothingItem)
-                }
-            }
-        }
-    }
-
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
     ): RecyclerView.ViewHolder {
-        return if (viewType == 1){  // Grid_Item
-            GridClothingViewHolder(
-                ViewClothingGridLayoutBinding.inflate(
-                    LayoutInflater.from(parent.context),
-                    parent,
-                    false
-                )
+        return if (viewType == 1)
+        {  ListClothingItemViewHolder(
+            ViewClothingListLayoutBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
             )
-        }else{  // List_Item
+        )
+        }
+        else
+        {  // List_Item
             ListClothingItemViewHolder(
                 ViewClothingListLayoutBinding.inflate(
                     LayoutInflater.from(parent.context),
@@ -102,7 +78,7 @@ class ClothingItemRVVBListAdapter(
         if (isList.value!!){
             (holder as ListClothingItemViewHolder).bind(clothingItem,deleteUpdateCallback)
         }else{
-            (holder as GridClothingViewHolder).bind(clothingItem,deleteUpdateCallback)
+            (holder as ListClothingItemViewHolder).bind(clothingItem,deleteUpdateCallback)
         }
 
     }

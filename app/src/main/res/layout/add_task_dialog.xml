@@ -81,10 +81,44 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <TextView
+                android:id="@+id/task_start"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="6dp"
+                android:text="Begin At:"
+                android:textSize="24sp"
+                android:textStyle="bold"
+
+                />
 
 
 
+            <TimePicker
+                android:id="@+id/starttime"
+                android:layout_width="270dp"
+                android:layout_height="100dp"
+                android:layout_centerHorizontal="true"
 
+                android:timePickerMode="spinner" />
+
+            <TextView
+                android:id="@+id/task_end"
+                android:layout_width="90dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="6dp"
+                android:text="End At:"
+                android:textSize="24sp"
+                android:textStyle="bold"
+
+                />
+            <TimePicker
+                android:id="@+id/end_ime"
+                android:layout_width="270dp"
+                android:layout_height="90dp"
+                android:layout_centerHorizontal="true"
+
+                android:timePickerMode="spinner" />
 
             <Button
                 android:id="@+id/saveTaskBtn"

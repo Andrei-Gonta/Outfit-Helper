@@ -57,12 +57,7 @@
                     android:layout_height="40dp"
                     android:src="@drawable/ic_sort" />
 
-                <ImageView
-                    android:id="@+id/listOrGridImg"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_view_list"
-                    app:tint="@color/black" />
+
             </LinearLayout>
 
             <com.google.android.material.textfield.TextInputLayout

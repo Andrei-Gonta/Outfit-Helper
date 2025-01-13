@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-
+import java.util.Date
 
 
 class TaskRepository(application: Application) {
@@ -112,18 +112,7 @@ class TaskRepository(application: Application) {
         }
     }
 
-    fun updateTaskPaticularField(taskId: String, title: String, description: String) {
-        try {
-            _statusLiveData.postValue(Loading())
-            CoroutineScope(Dispatchers.IO).launch {
-                val result = taskDao.updateTaskPaticularField(taskId, title, description)
-                handleResult(result, "Updated Task Successfully", Util.StatusResult.Updated)
 
-            }
-        } catch (e: Exception) {
-            _statusLiveData.postValue(Error(e.message.toString()))
-        }
-    }
 
     fun searchTaskList(query: String) {
         CoroutineScope(Dispatchers.IO).launch {

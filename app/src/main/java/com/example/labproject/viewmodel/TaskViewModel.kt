@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import com.example.labproject.model.Task
 import com.example.labproject.repository.TaskRepository
+import java.util.Date
 
 class TaskViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -36,9 +37,7 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
         taskRepository.updateTask(task)
     }
 
-    fun updateTaskPaticularField(taskId: String,title:String,description:String) {
-        taskRepository.updateTaskPaticularField(taskId, title, description)
-    }
+
     fun searchTaskList(query: String){
         taskRepository.searchTaskList(query)
     }
