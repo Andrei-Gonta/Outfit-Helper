@@ -30,7 +30,7 @@ class TaskRVVBListAdapter(
             viewTaskListLayoutBinding.titleTxt.text = task.title
             viewTaskListLayoutBinding.descrTxt.text = task.description
 
-            val dateFormat = SimpleDateFormat("dd-MMM-yyyy HH:mm:ss a", Locale.getDefault())
+            val dateFormat = SimpleDateFormat("dd-MMM-yyyy HH:mm:ss ", Locale.getDefault())
 
             viewTaskListLayoutBinding.dateTxt.text = dateFormat.format(task.date)
 

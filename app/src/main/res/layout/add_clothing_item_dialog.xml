@@ -49,7 +49,7 @@
                 android:id="@+id/edClothingItemNameL"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Enter The Name Of The Clothing Item">
+                android:hint="Enter The Clothing Item">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edClothingItemName"
@@ -62,15 +62,7 @@
 
 
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edClothingItemDesc"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="#EAE4E8"
-                    android:gravity="top|start"
-                    android:inputType="textMultiLine"
-                    android:lines="5"
-                    android:maxLines="5" />
+
 
 
 
@@ -82,7 +74,7 @@
                 android:layout_marginTop="4dp"
                 android:backgroundTint="@color/black"
                 style="@style/Widget.App.Button.Fill"
-                android:text="Save Clothing Item"
+                android:text="Add Clothing Item"
                 android:textSize="20sp" />
         </LinearLayout>
     </RelativeLayout>

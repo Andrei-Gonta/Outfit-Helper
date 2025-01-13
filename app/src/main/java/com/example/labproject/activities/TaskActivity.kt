@@ -1,5 +1,6 @@
 package com.example.labproject.activities
 
+import android.app.DatePickerDialog
 import android.app.Dialog
 import android.os.Bundle
 import android.text.Editable
@@ -7,9 +8,20 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
+import androidx.compose.material3.TimeInput
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.rememberTimePickerState
+import androidx.compose.runtime.Composable
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.MutableLiveData
@@ -37,6 +49,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.util.Calendar
 import java.util.Date
 import java.util.UUID
 
@@ -45,6 +58,10 @@ class TaskActivity : AppCompatActivity()
     private val taskBinding: ActivityTaskBinding by lazy {
         ActivityTaskBinding.inflate(layoutInflater)
     }
+
+    private var selectedDate: Date? = null
+    private lateinit var tvSelectedDate: TextView
+    private lateinit var btnSelectDate: Button
 
     private val addTaskDialog: Dialog by lazy {
         Dialog(this, R.style.DialogCustomTheme).apply {
@@ -73,8 +90,16 @@ class TaskActivity : AppCompatActivity()
     }
 
 
+    private lateinit var editText : EditText
+    private lateinit var button : Button
+
+    private lateinit var calendar : Calendar
+    private lateinit var datePickerDialog: DatePickerDialog
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(taskBinding.root)
 
 
@@ -105,6 +130,10 @@ class TaskActivity : AppCompatActivity()
             }
         })
 
+
+
+
+        //-----------------------------------
         taskBinding.addTaskFABtn.setOnClickListener {
             clearEditText(addETTitle, addETTitleL)
             clearEditText(addETDesc, addETDescL)
@@ -226,6 +255,12 @@ class TaskActivity : AppCompatActivity()
                 taskBinding.nestedScrollView.smoothScrollTo(0,positionStart)
             }
         })
+
+
+
+
+
+
         callGetTaskList(taskRVVBListAdapter)
         callSortByLiveData()
         statusCallback()
@@ -269,6 +304,17 @@ class TaskActivity : AppCompatActivity()
                 }
             }
     }
+
+
+
+    //--------------------------------
+
+
+
+
+
+
+
 
 
     private fun callSearch() {
