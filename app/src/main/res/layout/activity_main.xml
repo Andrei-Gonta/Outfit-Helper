@@ -175,17 +175,13 @@
                 app:layout_constraintStart_toStartOf="@+id/tv_temp"
                 app:layout_constraintTop_toBottomOf="@+id/tv_temp" />
 
-            <Button
-                android:id="@+id/btnDisplaySchedule"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Display Schedule"
-                tools:layout_editor_absoluteY="181dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+            <FrameLayout
+                android:id="@+id/frameLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </FrameLayout>
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -200,18 +196,17 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="25dp"
-            android:backgroundTint="@color/semi_transparent"
+            android:backgroundTint="@color/transparent"
             app:cardCornerRadius="10dp"
-            app:cardElevation="8dp"
+
             app:layout_constraintBottom_toTopOf="@+id/glMainCard"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/glMainCard">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
+                android:layout_width="350dp"
                 android:layout_height="wrap_content"
-                android:background="@color/semi_transparent"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp">
 
@@ -222,19 +217,6 @@
                     android:orientation="vertical"
                     app:layout_constraintGuide_percent="0.5" />
 
-                <androidx.constraintlayout.widget.Guideline
-                    android:id="@+id/glVLeft"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:layout_constraintGuide_percent="0.2" />
-
-                <androidx.constraintlayout.widget.Guideline
-                    android:id="@+id/glVRight"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:layout_constraintGuide_percent="0.8" />
 
                 <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/glHtop"
@@ -250,82 +232,12 @@
                     android:orientation="horizontal"
                     app:layout_constraintGuide_percent="0.75" />
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="6dp"
-                    android:orientation="vertical"
-                    app:layout_constraintBottom_toTopOf="@+id/glHtop"
-                    app:layout_constraintEnd_toStartOf="@+id/glVLeft"
-                    app:layout_constraintStart_toStartOf="@+id/glVLeft"
-                    app:layout_constraintTop_toTopOf="@+id/glHtop">
-
-
-                    <ImageView
-                        android:id="@+id/imgSunrise"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/sunrise" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/sunrise"
-                        android:textAlignment="center"
-                        android:textColor="@color/black"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:id="@+id/tvSunrise"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="05:00"
-                        android:textColor="@color/black"
-                        android:textSize="18sp" />
-                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="6dp"
-                    android:orientation="vertical"
-                    app:layout_constraintBottom_toTopOf="@+id/glHbottom"
-                    app:layout_constraintEnd_toStartOf="@+id/glVLeft"
-                    app:layout_constraintStart_toStartOf="@+id/glVLeft"
-                    app:layout_constraintTop_toTopOf="@+id/glHbottom">
 
-
-                    <ImageView
-                        android:id="@+id/imgPressure"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/pressure" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/pressure"
-                        android:textAlignment="center"
-                        android:textColor="@color/black"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:id="@+id/tvPressure"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="05:00"
-                        android:textColor="@color/black"
-                        android:textSize="18sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="6dp"
                     android:orientation="vertical"
                     app:layout_constraintBottom_toTopOf="@+id/glHtop"
                     app:layout_constraintEnd_toStartOf="@+id/glVMiddle"
@@ -333,29 +245,23 @@
                     app:layout_constraintTop_toTopOf="@+id/glHtop">
 
 
-                    <ImageView
-                        android:id="@+id/imgSunset"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/sunset" />
-
-                    <TextView
+                    <Button
+                        android:id="@+id/btnDisplaySchedule"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/sunset"
-                        android:textAlignment="center"
+                        android:layout_weight="1"
+                        android:text="Display Schedule"
+                        android:elevation="40dp"
+                        android:background="@color/transparent"
                         android:textColor="@color/black"
-                        android:textSize="18sp" />
+                        android:textSize="23dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:layout_editor_absoluteY="181dp" />
 
-                    <TextView
-                        android:id="@+id/tvSunset"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="05:00"
-                        android:textColor="@color/black"
-                        android:textSize="18sp" />
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -368,152 +274,31 @@
                     app:layout_constraintStart_toStartOf="@+id/glVMiddle"
                     app:layout_constraintTop_toTopOf="@+id/glHbottom">
 
-
-                    <ImageView
-                        android:id="@+id/imgHumidity"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/humidity" />
-
-                    <TextView
+                    <Button
+                        android:id="@+id/btnDisplayWaredrobe"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/humidity"
-                        android:textAlignment="center"
+                        android:text="Waredrobe"
+                        android:background="@color/transparent"
                         android:textColor="@color/black"
-                        android:textSize="18sp" />
+                        android:textSize="23dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                    <TextView
-                        android:id="@+id/tvHumidity"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="05:00"
-                        android:textColor="@color/black"
-                        android:textSize="18sp" />
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="6dp"
-                    android:orientation="vertical"
-                    app:layout_constraintBottom_toTopOf="@+id/glHtop"
-                    app:layout_constraintEnd_toStartOf="@+id/glVRight"
-                    app:layout_constraintStart_toStartOf="@+id/glVRight"
-                    app:layout_constraintTop_toTopOf="@+id/glHtop">
-
-
-                    <ImageView
-                        android:id="@+id/imgWind"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/wind" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/wind_speed"
-                        android:textAlignment="center"
-                        android:textColor="@color/black"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:id="@+id/tvWind"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="05:00"
-                        android:textColor="@color/black"
-                        android:textSize="18sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/layout_pollution"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="6dp"
-                    android:orientation="vertical"
-                    app:layout_constraintBottom_toTopOf="@+id/glHbottom"
-                    app:layout_constraintEnd_toStartOf="@+id/glVRight"
-                    app:layout_constraintStart_toStartOf="@+id/glVRight"
-                    app:layout_constraintTop_toTopOf="@+id/glHbottom">
-
-
-                    <ImageView
-                        android:id="@+id/imgPollution"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/smoke" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/air_quality"
-                        android:textAlignment="center"
-                        android:textColor="@color/black"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:id="@+id/tvAirQual"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="@string/perfect"
-                        android:textColor="@color/black"
-                        android:textSize="18sp" />
-                </LinearLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 
         </androidx.cardview.widget.CardView>
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/glMainForecastBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.90" />
 
-        <TextView
-            android:id="@+id/tv_forecast"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="0dp"
-            android:padding="5dp"
-            android:text="@string/five_days_forecast"
-            android:textSize="18sp"
-            app:drawableBottomCompat="@drawable/ic_down"
-            app:layout_constraintBottom_toTopOf="@+id/glMainForecastBtn"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/glMainForecastBtn" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-    <FrameLayout
-        android:id="@+id/frameLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
 
-    </FrameLayout>
-
-    <Button
-        android:id="@+id/btnDisplayWaredrobe"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Waredrobe"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

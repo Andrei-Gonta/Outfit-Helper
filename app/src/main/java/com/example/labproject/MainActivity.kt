@@ -13,8 +13,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+
 import com.example.labproject.activities.DisplayClothesActivity
 import com.example.labproject.activities.TaskActivity
 import com.example.labproject.adapter.RecycleViewAdapter
@@ -60,9 +59,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnDisplayWaredrobe.setOnClickListener {
-            // Create an Intent to launch AddToDoActivity
             val intent = Intent(this, DisplayClothesActivity::class.java)
-            // Start the activity
             startActivity(intent)
         }
 
@@ -89,13 +86,7 @@ class MainActivity : AppCompatActivity() {
 
         })
 
-        //fetchLocation()
         getCurrentWeather(city)
-
-        binding.tvForecast.setOnClickListener {
-
-            openDialog()
-        }
 
         binding.tvLocation.setOnClickListener {
             fetchLocation()
@@ -144,18 +135,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun openDialog() {
-        getForecast()
 
-        sheetLayoutBinding.rvForecast.apply {
-            setHasFixedSize(true)
-            layoutManager = GridLayoutManager(this@MainActivity, 1, RecyclerView.HORIZONTAL, false)
-
-        }
-
-        dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
-        dialog.show()
-    }
 
     @OptIn(DelicateCoroutinesApi::class)
     @SuppressLint("SetTextI18n")
@@ -224,27 +204,14 @@ class MainActivity : AppCompatActivity() {
 
                     Picasso.get().load(imgUrl).into(binding.imgWeather)
 
-                    /*
-                    binding.tvSunset.text =
-                        dateFormatConverter(
-                            data.sys.sunset.toLong()
-                        )
 
-                    binding.tvSunrise.text =
-                        dateFormatConverter(
-                            data.sys.sunrise.toLong()
-                        )
-*/
                     binding.apply {
                         tvStatus.text = data.weather[0].description
-                       // tvWind.text = "${data.wind.speed} KM/H"
                         tvLocation.text = "${data.name}\n${data.sys.country}"
                         tvTemp.text = "${data.main.temp.toInt()}°C"
                         tvFeelsLike.text = "Feels like: ${data.main.feels_like.toInt()}°C"
                         tvMinTemp.text = "Min temp: ${data.main.temp_min.toInt()}°C"
                         tvMaxTemp.text = "Max temp: ${data.main.temp_max.toInt()}°C"
-                       // tvHumidity.text = "${data.main.humidity} %"
-                       // tvPressure.text = "${data.main.pressure} hPa"
                         tvUpdateTime.text = "Last Update: ${
                             dateFormatConverter(
                                 data.dt.toLong()
@@ -252,7 +219,6 @@ class MainActivity : AppCompatActivity() {
                         }"
 
                     }
-
 
                 }
             }
