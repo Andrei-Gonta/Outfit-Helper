@@ -17,12 +17,14 @@
         android:theme="@style/Theme.LabProject"
         tools:targetApi="31">
         <activity
+            android:name=".activities.TaskSimpleActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.DisplayClothesSimpleActivity"
             android:exported="false" />
         <activity
             android:name=".activities.ResultActivity"
             android:exported="false" />
-
         <activity
             android:name=".activities.DisplayClothesActivity"
             android:exported="false" />

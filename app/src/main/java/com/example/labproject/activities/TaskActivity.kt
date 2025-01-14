@@ -142,11 +142,7 @@ class TaskActivity : AppCompatActivity() {
                 addTaskDialog.show()
             }
 
-            taskBinding.nextFABtn.setOnClickListener {
-                val intent = Intent(this, DisplayClothesSimpleActivity::class.java).putExtra("Temprature", temp_value)
 
-                startActivity(intent)
-            }
 
             val saveTaskBtn = addTaskDialog.findViewById<Button>(R.id.saveTaskBtn)
             saveTaskBtn.setOnClickListener {

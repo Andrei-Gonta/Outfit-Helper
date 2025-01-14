@@ -18,6 +18,7 @@ import androidx.core.app.ActivityCompat
 
 import com.example.labproject.activities.DisplayClothesActivity
 import com.example.labproject.activities.TaskActivity
+import com.example.labproject.activities.TaskSimpleActivity
 import com.example.labproject.adapter.RecycleViewAdapter
 import com.example.labproject.utils.RetrofitInstance
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -76,7 +77,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
         binding.btnStart.setOnClickListener {
-            val intent = Intent(this, TaskActivity::class.java).putExtra("Temprature", temp_value)
+            val intent = Intent(this, TaskSimpleActivity::class.java).putExtra("Temprature", temp_value)
 
             startActivity(intent)
         }
