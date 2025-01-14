@@ -196,8 +196,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="25dp"
-            android:backgroundTint="@color/transparent"
             app:cardCornerRadius="10dp"
+            app:cardBackgroundColor="@color/transparent"
 
             app:layout_constraintBottom_toTopOf="@+id/glMainCard"
             app:layout_constraintEnd_toEndOf="parent"
@@ -206,9 +206,9 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="350dp"
-                android:layout_height="wrap_content"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp">
+                android:layout_height="170dp"
+                android:paddingTop="9dp"
+               >
 
                 <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/glVMiddle"
@@ -233,61 +233,60 @@
                     app:layout_constraintGuide_percent="0.75" />
 
 
-                <LinearLayout
+                <Button
+                    android:id="@+id/btnDisplaySchedule"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="6dp"
+                    android:layout_weight="1"
+                    android:background="@color/transparent"
+                    android:elevation="40dp"
+                    android:text="Display Schedule"
+                    android:textColor="@color/black"
+                    android:textSize="23dp"
+                    tools:layout_editor_absoluteX="63dp"
+                    tools:layout_editor_absoluteY="2dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.502"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.1"
+                    />
 
-                    android:orientation="vertical"
-                    app:layout_constraintBottom_toTopOf="@+id/glHtop"
-                    app:layout_constraintEnd_toStartOf="@+id/glVMiddle"
-                    app:layout_constraintStart_toStartOf="@+id/glVMiddle"
-                    app:layout_constraintTop_toTopOf="@+id/glHtop">
-
-
-                    <Button
-                        android:id="@+id/btnDisplaySchedule"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Display Schedule"
-                        android:elevation="40dp"
-                        android:background="@color/transparent"
-                        android:textColor="@color/black"
-                        android:textSize="23dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:layout_editor_absoluteY="181dp" />
-
-
-                </LinearLayout>
-
-                <LinearLayout
+                <Button
+                    android:id="@+id/btnStart"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="6dp"
-                    android:orientation="vertical"
-                    app:layout_constraintBottom_toTopOf="@+id/glHbottom"
-                    app:layout_constraintEnd_toStartOf="@+id/glVMiddle"
-                    app:layout_constraintStart_toStartOf="@+id/glVMiddle"
-                    app:layout_constraintTop_toTopOf="@+id/glHbottom">
+                    android:background="@color/transparent"
+                    android:text="START"
+                    android:textColor="@color/black"
+                    android:textSize="23dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.502"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.9"
 
-                    <Button
-                        android:id="@+id/btnDisplayWaredrobe"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Waredrobe"
-                        android:background="@color/transparent"
-                        android:textColor="@color/black"
-                        android:textSize="23dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
 
-                </LinearLayout>
+                    />
+
+                <Button
+                    android:id="@+id/btnDisplayWaredrobe"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/transparent"
+                    android:elevation="40dp"
+                    android:text="Waredrobe"
+                    android:textColor="@color/black"
+                    android:textSize="23dp"
+
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.43" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>

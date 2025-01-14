@@ -9,6 +9,8 @@ import android.location.Geocoder
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
+import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
@@ -39,6 +41,7 @@ import java.util.Locale
 
 @Suppress("DEPRECATION")
 class MainActivity : AppCompatActivity() {
+
     private lateinit var binding: ActivityMainBinding
 
     private lateinit var sheetLayoutBinding: BottomSheetLayoutBinding
@@ -46,6 +49,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var dialog: BottomSheetDialog
 
     private var city: String = "timisoara"
+
+
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
@@ -58,6 +63,9 @@ class MainActivity : AppCompatActivity() {
         dialog.setContentView(sheetLayoutBinding.root)
         setContentView(binding.root)
 
+        val temperature = binding.tvTemp.text.toString()
+
+        val temp_value = temperature
         binding.btnDisplayWaredrobe.setOnClickListener {
             val intent = Intent(this, DisplayClothesActivity::class.java)
             startActivity(intent)
@@ -65,6 +73,11 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnDisplaySchedule.setOnClickListener {
             val intent = Intent(this, TaskActivity::class.java)
+            startActivity(intent)
+        }
+        binding.btnStart.setOnClickListener {
+            val intent = Intent(this, TaskActivity::class.java).putExtra("Temprature", temp_value)
+
             startActivity(intent)
         }
 

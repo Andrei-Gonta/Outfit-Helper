@@ -49,7 +49,7 @@
                 android:id="@+id/edTaskTitleL"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Enter The Task Title">
+                android:hint="Enter Task Title">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edTaskTitle"
@@ -65,7 +65,7 @@
                 android:id="@+id/edTaskDescL"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Enter The Task Description">
+                android:hint="Enter Task Description">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edTaskDesc"
@@ -99,7 +99,6 @@
                 android:layout_width="270dp"
                 android:layout_height="100dp"
                 android:layout_centerHorizontal="true"
-
                 android:timePickerMode="spinner" />
 
             <TextView

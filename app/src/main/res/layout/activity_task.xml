@@ -119,4 +119,23 @@
         app:icon="@drawable/ic_add_circle"
         app:iconSize="25dp"
         app:iconTint="@color/white" />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/nextFABtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_margin="16dp"
+        android:layout_marginLeft="60dp"
+        android:backgroundTint="@color/black"
+        android:text="Next"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+
+        app:iconSize="25dp"
+        app:iconTint="@color/white" />
+
+
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

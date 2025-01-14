@@ -2,6 +2,7 @@ package com.example.labproject.activities
 
 import android.app.DatePickerDialog
 import android.app.Dialog
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -95,6 +96,8 @@ class TaskActivity : AppCompatActivity() {
         val calendar = Calendar.getInstance()
         var myDate = calendar.time
 
+        val temp_value = intent.getIntExtra("Temprature", 0)
+
         //timePicker.setIs24HourView(true)
         timePicker.setOnTimeChangedListener { _, hourOfDay, minute ->
             calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
@@ -102,8 +105,6 @@ class TaskActivity : AppCompatActivity() {
              // Now you can use myDate as needed
              myDate = calendar.time
              }
-
-
             setContentView(taskBinding.root)
 
 
@@ -134,13 +135,19 @@ class TaskActivity : AppCompatActivity() {
                 }
             })
 
-
             //-----------------------------------
             taskBinding.addTaskFABtn.setOnClickListener {
                 clearEditText(addETTitle, addETTitleL)
                 clearEditText(addETDesc, addETDescL)
                 addTaskDialog.show()
             }
+
+            taskBinding.nextFABtn.setOnClickListener {
+                val intent = Intent(this, DisplayClothesSimpleActivity::class.java).putExtra("Temprature", temp_value)
+
+                startActivity(intent)
+            }
+
             val saveTaskBtn = addTaskDialog.findViewById<Button>(R.id.saveTaskBtn)
             saveTaskBtn.setOnClickListener {
                 if (validateEditText(addETTitle, addETTitleL)
@@ -172,7 +179,6 @@ class TaskActivity : AppCompatActivity() {
                 override fun afterTextChanged(s: Editable) {
                     validateEditText(updateETTitle, updateETTitleL)
                 }
-
             })
 
             val updateETDesc = updateTaskDialog.findViewById<TextInputEditText>(R.id.edTaskDesc)

@@ -1,6 +1,7 @@
 package com.example.labproject.activities
 
 import android.app.Dialog
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -102,9 +103,9 @@ class DisplayClothesActivity : AppCompatActivity() {
 
         clothingItemBinding.addClothingItemFABtn.setOnClickListener {
             clearEditText(addETName, addETNameL)
-
             addClothingItemDialog.show()
         }
+
         val saveClothingItemBtn = addClothingItemDialog.findViewById<Button>(R.id.saveClothingItemBtn)
         saveClothingItemBtn.setOnClickListener {
             if (validateEditText(addETName, addETNameL)
