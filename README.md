@@ -1,1 +1,2 @@
-SMA Project
+# __Outfit Helper__
+
