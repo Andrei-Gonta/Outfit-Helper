@@ -46,7 +46,6 @@ class ClothingItemRVVBListAdapter(
     }
 
 
-
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
@@ -58,10 +57,10 @@ class ClothingItemRVVBListAdapter(
                 parent,
                 false
             )
-        )
+         )
         }
         else
-        {  // List_Item
+        {  // Display_List
             ListClothingItemViewHolder(
                 ViewClothingListLayoutBinding.inflate(
                     LayoutInflater.from(parent.context),
@@ -85,9 +84,9 @@ class ClothingItemRVVBListAdapter(
 
     override fun getItemViewType(position: Int): Int {
         return if (isList.value!!){
-            0 // List_Item
+            0 // Display List
         }else{
-            1 // Grid_Item
+            1 // Display Grid
         }
     }
 

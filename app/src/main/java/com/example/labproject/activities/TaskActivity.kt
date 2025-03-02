@@ -60,7 +60,11 @@ class TaskActivity : AppCompatActivity() {
         ActivityTaskBinding.inflate(layoutInflater)
     }
 
-
+    private val loadingDialog: Dialog by lazy {
+        Dialog(this, R.style.DialogCustomTheme).apply {
+            setupDialog(R.layout.loading_dialog)
+        }
+    }
 
     private val addTaskDialog: Dialog by lazy {
         Dialog(this, R.style.DialogCustomTheme).apply {
@@ -74,11 +78,6 @@ class TaskActivity : AppCompatActivity() {
         }
     }
 
-    private val loadingDialog: Dialog by lazy {
-        Dialog(this, R.style.DialogCustomTheme).apply {
-            setupDialog(R.layout.loading_dialog)
-        }
-    }
 
     private val taskViewModel: TaskViewModel by lazy {
         ViewModelProvider(this)[TaskViewModel::class.java]
@@ -91,24 +90,29 @@ class TaskActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         val timePicker: TimePicker = addTaskDialog.findViewById(R.id.starttime)
         val calendar = Calendar.getInstance()
-        var myDate = calendar.time
+        var startMoment = calendar.time
+        val timePicker2: TimePicker = addTaskDialog.findViewById(R.id.endtime)
+        val calendar2 = Calendar.getInstance()
+        var endMoment = calendar2.time
 
         val temp_value = intent.getIntExtra("Temprature", 0)
 
-        //timePicker.setIs24HourView(true)
         timePicker.setOnTimeChangedListener { _, hourOfDay, minute ->
             calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
             calendar.set(Calendar.MINUTE, minute)
-             // Now you can use myDate as needed
-             myDate = calendar.time
+
+             startMoment = calendar.time
              }
             setContentView(taskBinding.root)
 
+        timePicker2.setOnTimeChangedListener { _, hourOfDay, minute ->
+            calendar2.set(Calendar.HOUR_OF_DAY, hourOfDay)
+            calendar2.set(Calendar.MINUTE, minute)
+           endMoment = calendar2.time
+        }
 
-            // Add task start
             val addCloseImg = addTaskDialog.findViewById<ImageView>(R.id.closeImg)
             addCloseImg.setOnClickListener { addTaskDialog.dismiss() }
 
@@ -121,7 +125,6 @@ class TaskActivity : AppCompatActivity() {
                 override fun afterTextChanged(s: Editable) {
                     validateEditText(addETTitle, addETTitleL)
                 }
-
             })
 
             val addETDesc = addTaskDialog.findViewById<TextInputEditText>(R.id.edTaskDesc)
@@ -131,7 +134,7 @@ class TaskActivity : AppCompatActivity() {
                 override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
                 override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
                 override fun afterTextChanged(s: Editable) {
-                    validateEditText(addETDesc, addETDescL)
+                   validateEditText(addETDesc, addETDescL)
                 }
             })
 
@@ -141,8 +144,6 @@ class TaskActivity : AppCompatActivity() {
                 clearEditText(addETDesc, addETDescL)
                 addTaskDialog.show()
             }
-
-
 
             val saveTaskBtn = addTaskDialog.findViewById<Button>(R.id.saveTaskBtn)
             saveTaskBtn.setOnClickListener {
@@ -154,18 +155,15 @@ class TaskActivity : AppCompatActivity() {
                         UUID.randomUUID().toString(),
                         addETTitle.text.toString().trim(),
                         addETDesc.text.toString().trim(),
-                        myDate,
-                        Date()
+                        startMoment,
+                        endMoment
                     )
                     hideKeyBoard(it)
                     addTaskDialog.dismiss()
                     taskViewModel.insertTask(newTask)
                 }
             }
-            // Add task end
 
-
-            // Update Task Start
             val updateETTitle = updateTaskDialog.findViewById<TextInputEditText>(R.id.edTaskTitle)
             val updateETTitleL = updateTaskDialog.findViewById<TextInputLayout>(R.id.edTaskTitleL)
 
@@ -193,7 +191,7 @@ class TaskActivity : AppCompatActivity() {
 
             val updateTaskBtn = updateTaskDialog.findViewById<Button>(R.id.updateTaskBtn)
 
-            // Update Task End
+
 
             isListMutableLiveData.observe(this) {
                 if (it) {
@@ -217,11 +215,7 @@ class TaskActivity : AppCompatActivity() {
                 TaskRVVBListAdapter(isListMutableLiveData) { type, position, task ->
                     if (type == "delete") {
                         taskViewModel
-                            // Deleted Task
-//                .deleteTask(task)
                             .deleteTaskUsingId(task.id)
-
-                        // Restore Deleted task
                         restoreDeletedTask(task)
                     } else if (type == "update") {
                         updateETTitle.setText(task.title)
@@ -234,19 +228,13 @@ class TaskActivity : AppCompatActivity() {
                                     task.id,
                                     updateETTitle.text.toString().trim(),
                                     updateETDesc.text.toString().trim(),
-//                           here i Date updated
-                                    myDate,
-                                    Date()
+                                    startMoment,
+                                    endMoment
                                 )
                                 hideKeyBoard(it)
                                 updateTaskDialog.dismiss()
                                 taskViewModel
                                     .updateTask(updateTask)
-//                            .updateTaskPaticularField(
-//                                task.id,
-//                                updateETTitle.text.toString().trim(),
-//                                updateETDesc.text.toString().trim()
-//                            )
                             }
                         }
                         updateTaskDialog.show()
@@ -258,7 +246,6 @@ class TaskActivity : AppCompatActivity() {
                 RecyclerView.AdapterDataObserver() {
                 override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                     super.onItemRangeInserted(positionStart, itemCount)
-//                mainBinding.taskRV.smoothScrollToPosition(positionStart)
                     taskBinding.nestedScrollView.smoothScrollTo(0, positionStart)
                 }
             })

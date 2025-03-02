@@ -83,7 +83,7 @@ class TaskRVVBListAdapter(
         parent: ViewGroup,
         viewType: Int,
     ): RecyclerView.ViewHolder {
-        return if (viewType == 1){  // Grid_Item
+        return if (viewType == 1){  // Display_Grid
             GridTaskViewHolder(
                 ViewTaskGridLayoutBinding.inflate(
                     LayoutInflater.from(parent.context),
@@ -91,7 +91,7 @@ class TaskRVVBListAdapter(
                     false
                 )
             )
-        }else{  // List_Item
+        }else{  // Displa_List
             ListTaskViewHolder(
                 ViewTaskListLayoutBinding.inflate(
                     LayoutInflater.from(parent.context),

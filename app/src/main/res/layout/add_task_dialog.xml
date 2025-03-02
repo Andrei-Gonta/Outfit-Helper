@@ -112,7 +112,7 @@
 
                 />
             <TimePicker
-                android:id="@+id/end_ime"
+                android:id="@+id/endtime"
                 android:layout_width="270dp"
                 android:layout_height="90dp"
                 android:layout_centerHorizontal="true"

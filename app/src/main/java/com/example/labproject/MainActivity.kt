@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
@@ -51,8 +52,6 @@ class MainActivity : AppCompatActivity() {
 
     private var city: String = "timisoara"
 
-
-
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
 
@@ -76,6 +75,7 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, TaskActivity::class.java)
             startActivity(intent)
         }
+
         binding.btnStart.setOnClickListener {
             val intent = Intent(this, TaskSimpleActivity::class.java).putExtra("Temprature", temp_value)
 
@@ -86,22 +86,17 @@ class MainActivity : AppCompatActivity() {
 
         binding.searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
-
                 if (query!= null){
                     city = query
                 }
                 getCurrentWeather(city)
                 return true
             }
-
             override fun onQueryTextChange(newText: String?): Boolean {
                 return false
             }
-
         })
-
         getCurrentWeather(city)
-
         binding.tvLocation.setOnClickListener {
             fetchLocation()
         }
@@ -110,8 +105,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun fetchLocation() {
         val task: Task<Location> = fusedLocationProviderClient.lastLocation
-
-
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -136,56 +129,15 @@ class MainActivity : AppCompatActivity() {
                     override fun onGeocode(addresses: MutableList<Address>) {
                         city = addresses[0].locality
                     }
-
                 })
             }else{
                 val address = geocoder.getFromLocation(it.latitude,it.longitude,1) as List<Address>
-
                 city = address[0].locality
             }
-
             getCurrentWeather(city)
         }
     }
 
-
-
-
-    @OptIn(DelicateCoroutinesApi::class)
-    @SuppressLint("SetTextI18n")
-    private fun getForecast() {
-        GlobalScope.launch(Dispatchers.IO) {
-            val response = try {
-                RetrofitInstance.api.getForecast(
-                    city,
-                    "metric",
-                    applicationContext.getString(R.string.api_key)
-                )
-            } catch (e: IOException) {
-                Toast.makeText(applicationContext, "app error ${e.message}", Toast.LENGTH_SHORT)
-                    .show()
-                return@launch
-            } catch (e: HttpException) {
-                Toast.makeText(applicationContext, "http error ${e.message}", Toast.LENGTH_SHORT)
-                    .show()
-                return@launch
-            }
-
-            if (response.isSuccessful && response.body() != null) {
-                withContext(Dispatchers.Main) {
-
-                    val data = response.body()!!
-
-                    val forecastArray: ArrayList<ForecastData> = data.list as ArrayList<ForecastData>
-
-                    val adapter = RecycleViewAdapter(forecastArray)
-                    sheetLayoutBinding.rvForecast.adapter = adapter
-                    sheetLayoutBinding.tvSheet.text = "Five days forecast in ${data.city.name}"
-
-                }
-            }
-        }
-    }
 
     @SuppressLint("SetTextI18n")
     @OptIn(DelicateCoroutinesApi::class)
@@ -211,13 +163,10 @@ class MainActivity : AppCompatActivity() {
                 withContext(Dispatchers.Main) {
 
                     val data = response.body()!!
-
                     val iconId = data.weather[0].icon
-
                     val imgUrl = "https://openweathermap.org/img/wn/$iconId@4x.png"
 
                     Picasso.get().load(imgUrl).into(binding.imgWeather)
-
 
                     binding.apply {
                         tvStatus.text = data.weather[0].description
@@ -231,9 +180,7 @@ class MainActivity : AppCompatActivity() {
                                 data.dt.toLong()
                             )
                         }"
-
                     }
-
                 }
             }
         }
