@@ -7,11 +7,16 @@ The **Outfit Helper App** is a mobile application that helps users choose the pe
 ## 🚀 Features
 
 - 🌦 **Weather-Based Recommendations** – Get outfit suggestions based on real-time weather forecasts.
-- 📅 **Schedule Integration** – Adjusts outfit recommendations based on your planned activities for the day.
+- 📅 **Schedule Integration** – User can add and edit a schedule by adding/removing activities. The outfit recommendations are adjusted based on the users planned activities for the day.
 - 👕 **Wardrobe Customization** – Allows users to upload their wardrobe items and personalize recommendations.
-- 🔥 **Smart AI Suggestions** – Uses AI to mix and match outfits based on color coordination and style.
+- 🔥 **Smart AI Suggestions** – Uses AI to mix and match outfits based on color coordination and style.(To be implemented)
 - 📱 **User-Friendly Interface** – Simple and intuitive design for easy outfit selection.
 
 ## 🛠️ Tech Stack
+- **Frontend/UI:** XML
+- **Backend:** Kotlin / Room 
+- **Weather API:** OpenWeather API
+- **Database:** Room
+- **Other tools:** Retrofit / Picasso / Lottie
 
 
