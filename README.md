@@ -19,4 +19,5 @@ The **Outfit Helper App** is a mobile application that helps users choose the pe
 - **Database:** Room
 - **Other tools:** Retrofit / Picasso / Lottie
 
+- ![](overview/img.png)
 
