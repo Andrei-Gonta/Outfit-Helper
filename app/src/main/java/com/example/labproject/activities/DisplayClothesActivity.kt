@@ -81,51 +81,10 @@ class DisplayClothesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(clothingItemBinding.root)
 
+        // Remove dialog initialization since we won't need it
+        val updateCloseImg = updateClothingItemDialog.findViewById<ImageView>(R.id.closeImg)
+        updateCloseImg.setOnClickListener { updateClothingItemDialog.dismiss() }
 
-        // Add task start
-        val addCloseImg = addClothingItemDialog.findViewById<ImageView>(R.id.closeImg)
-        addCloseImg.setOnClickListener { addClothingItemDialog.dismiss() }
-
-        val addETName = addClothingItemDialog.findViewById<TextInputEditText>(R.id.edClothingItemName)
-        val addETNameL = addClothingItemDialog.findViewById<TextInputLayout>(R.id.edClothingItemNameL)
-
-        addETName.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-            override fun afterTextChanged(s: Editable) {
-                validateEditText(addETName, addETNameL)
-            }
-
-        })
-
-
-
-
-        clothingItemBinding.addClothingItemFABtn.setOnClickListener {
-            clearEditText(addETName, addETNameL)
-            addClothingItemDialog.show()
-        }
-
-        val saveClothingItemBtn = addClothingItemDialog.findViewById<Button>(R.id.saveClothingItemBtn)
-        saveClothingItemBtn.setOnClickListener {
-            if (validateEditText(addETName, addETNameL)
-
-            ) {
-
-                val newClothingItem = ClothingItem(
-                    UUID.randomUUID().toString(),
-                    addETName.text.toString().trim(),
-                    
-                )
-                hideKeyBoard(it)
-                addClothingItemDialog.dismiss()
-                clothingItemViewModel.insertClothingItem(newClothingItem)
-            }
-        }
-        // Add task end
-
-
-        // Update Task Start
         val updateETName = updateClothingItemDialog.findViewById<TextInputEditText>(R.id.edClothingItemName)
         val updateETNameL = updateClothingItemDialog.findViewById<TextInputLayout>(R.id.edClothingItemNameL)
 
@@ -135,70 +94,43 @@ class DisplayClothesActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable) {
                 validateEditText(updateETName, updateETNameL)
             }
-
         })
-/*
-        val updateETDesc = updateClothingItemDialog.findViewById<TextInputEditText>(R.id.edTaskDesc)
-        val updateETDescL = updateClothingItemDialog.findViewById<TextInputLayout>(R.id.edTaskDescL)
 
-        updateETDesc.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-            override fun afterTextChanged(s: Editable) {
-                validateEditText(updateETDesc, updateETDescL)
-            }
-        })
-*/
-        val updateCloseImg = updateClothingItemDialog.findViewById<ImageView>(R.id.closeImg)
-        updateCloseImg.setOnClickListener { updateClothingItemDialog.dismiss() }
+        // Launch recognition activity instead of showing dialog
+        clothingItemBinding.addClothingItemFABtn.setOnClickListener {
+            val intent = Intent(this, RecognitionActivity::class.java)
+            startActivity(intent)
+        }
 
         val updateClothingItemBtn = updateClothingItemDialog.findViewById<Button>(R.id.updateClothingItemBtn)
-
-        // Update Task End
 
         isListMutableLiveData.observe(this){
             if (it){
                 clothingItemBinding.clothingItemRV.layoutManager = LinearLayoutManager(
                     this, LinearLayoutManager.VERTICAL,false
                 )
-                //clothingItemBinding.sortImg.setImageResource(R.drawable.ic_view_module)
             }else{
                 clothingItemBinding.clothingItemRV.layoutManager = StaggeredGridLayoutManager(
                     2, LinearLayoutManager.VERTICAL
                 )
-               // clothingItemBinding.sortImg.setImageResource(R.drawable.ic_view_list)
             }
         }
-        /*
-                clothingItemBinding.listOrGridImg.setOnClickListener {
-                    isListMutableLiveData.postValue(!isListMutableLiveData.value!!)
-                }
-                */
-
 
         val clothingItemRVVBListAdapter = ClothingItemRVVBListAdapter(isListMutableLiveData ) { type, position, clothingItem ->
             if (type == "delete") {
-                clothingItemViewModel
-                   
-                    .deleteClothingItemUsingId(clothingItem.id)
-
-                // Restore Deleted task
+                clothingItemViewModel.deleteClothingItemUsingId(clothingItem.id)
                 restoreDeletedClothingItem(clothingItem)
             } else if (type == "update") {
                 updateETName.setText(clothingItem.name)
                 updateClothingItemBtn.setOnClickListener {
-                    if (validateEditText(updateETName, updateETNameL)
-                    ) {
+                    if (validateEditText(updateETName, updateETNameL)) {
                         val updateClothingItem = ClothingItem(
                             clothingItem.id,
                             updateETName.text.toString().trim()
-                        
                         )
                         hideKeyBoard(it)
                         updateClothingItemDialog.dismiss()
-                        clothingItemViewModel
-                            .updateClothingItem(updateClothingItem)
-//                            
+                        clothingItemViewModel.updateClothingItem(updateClothingItem)
                     }
                 }
                 updateClothingItemDialog.show()
@@ -210,7 +142,6 @@ class DisplayClothesActivity : AppCompatActivity() {
             RecyclerView.AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                 super.onItemRangeInserted(positionStart, itemCount)
-//                mainBinding.taskRV.smoothScrollToPosition(positionStart)
                 clothingItemBinding.nestedScrollView.smoothScrollTo(0,positionStart)
             }
         })
