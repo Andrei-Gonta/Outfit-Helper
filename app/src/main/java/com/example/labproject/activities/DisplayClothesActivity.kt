@@ -96,7 +96,7 @@ class DisplayClothesActivity : AppCompatActivity() {
             }
         })
 
-        // Launch recognition activity instead of showing dialog
+
         clothingItemBinding.addClothingItemFABtn.setOnClickListener {
             val intent = Intent(this, RecognitionActivity::class.java)
             startActivity(intent)
@@ -291,8 +291,5 @@ class DisplayClothesActivity : AppCompatActivity() {
                 }
         }
     }
-
-
-
 
 }
