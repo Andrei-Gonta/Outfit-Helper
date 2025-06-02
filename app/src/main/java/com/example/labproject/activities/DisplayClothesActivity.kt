@@ -291,5 +291,4 @@ class DisplayClothesActivity : AppCompatActivity() {
                 }
         }
     }
-
 }
