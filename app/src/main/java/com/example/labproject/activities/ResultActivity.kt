@@ -16,6 +16,7 @@ import com.example.labproject.viewmodel.ClothingItemViewModel
 import com.example.labproject.viewmodel.TaskViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -41,6 +42,12 @@ class ResultActivity : AppCompatActivity() {
         taskViewModel = ViewModelProvider(this)[TaskViewModel::class.java]
         clothingItemViewModel = ViewModelProvider(this)[ClothingItemViewModel::class.java]
 
+        // Initialize both task and clothing item lists
+        taskViewModel.getTaskList(true, "starttime")
+        clothingItemViewModel.getClothingItems(true, "name")
+
+        android.util.Log.d("ResultActivity", "ViewModels initialized and lists requested")
+
         val messageTop = findViewById<TextView>(R.id.message_top)
         val messageBottom = findViewById<TextView>(R.id.message_bottom)
         val messageBottom2 = findViewById<TextView>(R.id.message_bottom2)
@@ -50,11 +57,9 @@ class ResultActivity : AppCompatActivity() {
         val tempValue = intent.getIntExtra("Temperature", 0)
         val weatherDescription = intent.getStringExtra("WeatherDescription") ?: ""
         val windSpeed = intent.getFloatExtra("WindSpeed", 0f)
-        val humidity = intent.getIntExtra("Humidity", 0)
+        val rainChance = intent.getIntExtra("RainChance", 0)
 
-        // Log the task names to debug
-        val taskNames = intent.getStringArrayListExtra("TaskNames")
-        android.util.Log.d("ResultActivity", "Task names received: $taskNames")
+        android.util.Log.d("ResultActivity", "Starting to fetch tasks and clothing items...")
 
         // Initialize views for outfit display
         val hat: ImageView = findViewById(R.id.hat)
@@ -62,21 +67,79 @@ class ResultActivity : AppCompatActivity() {
         val jeans: ImageView = findViewById(R.id.jeans)
         val boots: ImageView = findViewById(R.id.boots)
 
-        // Build and display the prompt immediately
-        val prompt = buildPrompt(tempValue, weatherDescription, windSpeed, humidity, emptyList(), emptyList())
-        promptText.text = prompt
+        // Fetch tasks and clothing items
+        CoroutineScope(Dispatchers.Main).launch {
+            try {
+                // Get today's date
+                val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+                android.util.Log.d("ResultActivity", "Today's date: $today")
 
-        // For now, keep the simple outfit logic
-        if(tempValue < 10) {
-            hat.setImageResource(R.drawable.hat)
-            jacket.setImageResource(R.drawable.blue_jacket)
-            jeans.setImageResource(R.drawable.pants2)
-            boots.setImageResource(R.drawable.boots)
-            messageTop.text = "This is your outfit!"
-            messageBottom.text = "There is a high chance of precipitation, don't forget to take an umbrella with you!"
-            messageBottom2.text = "Have a wonderful day!"
-        } else {
-            messageTop.text = "Another outfit"
+                // Wait a bit for the data to be loaded
+                delay(500)
+
+                // Get the initial task data
+                val taskStateFlow = taskViewModel.taskStateFlow.first()
+                android.util.Log.d("ResultActivity", "Task state flow status: ${taskStateFlow.status}")
+
+                val taskData = taskStateFlow.data
+                android.util.Log.d("ResultActivity", "Task data available: ${taskData != null}")
+
+                // Get the first list of tasks if available
+                val allTasks = taskData?.first()
+                android.util.Log.d("ResultActivity", "All tasks count: ${allTasks?.size}")
+                android.util.Log.d("ResultActivity", "All tasks: ${allTasks?.map {
+                    "${it.title} (${SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(it.starttime)} - ${SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(it.endtime)})"
+                }}")
+
+                // Filter tasks for today
+                val tasks = allTasks?.filter { task ->
+                    val taskDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(task.starttime)
+                    val isToday = taskDate == today
+                    android.util.Log.d("ResultActivity", "Task: ${task.title}, Date: $taskDate, Today: $today, IsToday: $isToday")
+                    isToday
+                } ?: emptyList()
+
+                android.util.Log.d("ResultActivity", "Today's tasks count: ${tasks.size}")
+                android.util.Log.d("ResultActivity", "Today's tasks: ${tasks.map {
+                    "${it.title} (${SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(it.starttime)} - ${SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(it.endtime)})"
+                }}")
+
+                // Get clothing items
+                val clothingItemStateFlow = clothingItemViewModel.clothingItemStateFlow.first()
+                android.util.Log.d("ResultActivity", "Clothing item state flow status: ${clothingItemStateFlow.status}")
+
+                val clothingItemsData = clothingItemStateFlow.data
+                android.util.Log.d("ResultActivity", "Clothing items data available: ${clothingItemsData != null}")
+
+                val clothingItems = clothingItemsData?.first() ?: emptyList()
+                android.util.Log.d("ResultActivity", "Clothing items count: ${clothingItems.size}")
+                android.util.Log.d("ResultActivity", "Clothing items: ${clothingItems.map { it.name }}")
+
+                // Build and display the prompt
+                val prompt = buildPrompt(tempValue, weatherDescription, windSpeed, rainChance, tasks, clothingItems)
+                android.util.Log.d("ResultActivity", "Built prompt: $prompt")
+                promptText.text = prompt
+
+                // For now, keep the simple outfit logic
+                if(tempValue < 10 || rainChance > 50) {
+                    hat.setImageResource(R.drawable.hat)
+                    jacket.setImageResource(R.drawable.blue_jacket)
+                    jeans.setImageResource(R.drawable.pants2)
+                    boots.setImageResource(R.drawable.boots)
+                    messageTop.text = "This is your outfit!"
+                    messageBottom.text = if (rainChance > 50) {
+                        "There is a ${rainChance}% chance of rain, don't forget to take an umbrella with you!"
+                    } else {
+                        "It's cold outside, dress warmly!"
+                    }
+                    messageBottom2.text = "Have a wonderful day!"
+                } else {
+                    messageTop.text = "Another outfit"
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("ResultActivity", "Error loading data", e)
+                messageTop.text = "Error loading data: ${e.message}"
+            }
         }
     }
 
@@ -84,29 +147,37 @@ class ResultActivity : AppCompatActivity() {
         temperature: Int,
         weatherDescription: String,
         windSpeed: Float,
-        humidity: Int,
+        rainChance: Int,
         tasks: List<Task>,
         clothingItems: List<ClothingItem>
     ): String {
-        // Get task names from intent
-        val taskNames = intent.getStringArrayListExtra("TaskNames") ?: ArrayList()
-        android.util.Log.d("ResultActivity", "Building prompt with task names: $taskNames")
+        android.util.Log.d("ResultActivity", "Building prompt with ${tasks.size} tasks")
 
-        val taskDescriptions = if (taskNames.isNotEmpty()) {
-            taskNames.joinToString(", ")
+        // Get task descriptions from database with time information
+        val taskDescriptions = if (tasks.isNotEmpty()) {
+            tasks.joinToString(", ") { task ->
+                val startTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(task.starttime)
+                val endTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(task.endtime)
+                "${task.title} ($startTime - $endTime)".also {
+                    android.util.Log.d("ResultActivity", "Task description: $it")
+                }
+            }
         } else {
-            "nicio activitate"
+            "nicio activitate".also {
+                android.util.Log.d("ResultActivity", "No tasks found")
+            }
         }
 
-        // Get clothing items from intent
-        val availableClothes = intent.getStringArrayListExtra("ClothingItems")?.joinToString(", ") ?: ""
+        // Get clothing items description
+        val availableClothes = if (clothingItems.isNotEmpty()) {
+            clothingItems.joinToString(", ") { it.name }
+        } else {
+            "nicio haină"
+        }
 
-        val prompt = "Sugerează un outfit potrivit pentru o zi cu ${temperature}°C, " +
-                "cu ${weatherDescription.lowercase()}, vânt de ${windSpeed}m/s și umiditate de ${humidity}%. " +
+        return "Sugerează un outfit potrivit pentru o zi cu ${temperature}°C, " +
+                "cu ${weatherDescription.lowercase()}, vânt de ${windSpeed}m/s și șansă de ploaie de ${rainChance}%. " +
                 "Utilizatorul are următoarele activități: ${taskDescriptions}, " +
-                "iar hainele disponibile sunt: ${if (availableClothes.isNotEmpty()) availableClothes else "nicio haină"}"
-
-        android.util.Log.d("ResultActivity", "Generated prompt: $prompt")
-        return prompt
+                "iar hainele disponibile sunt: ${availableClothes}"
     }
 }

@@ -19,7 +19,6 @@ import androidx.core.app.ActivityCompat
 
 import com.example.labproject.activities.DisplayClothesActivity
 import com.example.labproject.activities.TaskActivity
-import com.example.labproject.activities.TaskSimpleActivity
 import com.example.labproject.adapter.RecycleViewAdapter
 import com.example.labproject.adapter.ForecastAdapter
 import com.example.labproject.utils.RetrofitInstance
@@ -80,7 +79,7 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, DisplayClothesActivity::class.java)
                 .putExtra("Temperature", binding.tvTemp.text.toString().replace("°C", "").toInt())
                 .putExtra("WeatherDescription", binding.tvStatus.text.toString())
-
+                .putExtra("RainChance", forecastAdapter.getCurrentRainChance())
             startActivity(intent)
         }
 
@@ -88,7 +87,7 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, TaskActivity::class.java)
                 .putExtra("Temperature", binding.tvTemp.text.toString().replace("°C", "").toInt())
                 .putExtra("WeatherDescription", binding.tvStatus.text.toString())
-
+                .putExtra("RainChance", forecastAdapter.getCurrentRainChance())
             startActivity(intent)
         }
 
@@ -96,7 +95,7 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, TaskActivity::class.java)
                 .putExtra("Temperature", binding.tvTemp.text.toString().replace("°C", "").toInt())
                 .putExtra("WeatherDescription", binding.tvStatus.text.toString())
-
+                .putExtra("RainChance", forecastAdapter.getCurrentRainChance())
             startActivity(intent)
         }
 

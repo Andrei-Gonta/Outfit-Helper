@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.Flow
 interface TaskDao {
 
 
-    @Query("SELECT * FROM Task ORDER BY starttime")
+    @Query("SELECT * FROM Task ORDER BY starttime DESC")
     fun getTaskList() : Flow<List<Task>>
 
 

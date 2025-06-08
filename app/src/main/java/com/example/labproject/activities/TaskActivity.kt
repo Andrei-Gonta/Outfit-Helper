@@ -94,31 +94,36 @@ class TaskActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val timePicker: TimePicker = addTaskDialog.findViewById(R.id.starttime)
-        val calendar = Calendar.getInstance()
-        var startMoment = calendar.time
         val timePicker2: TimePicker = addTaskDialog.findViewById(R.id.endtime)
-        val calendar2 = Calendar.getInstance()
-        var endMoment = calendar2.time
+
+        // Initialize calendars for start and end times
+        val startCalendar = Calendar.getInstance()
+        val endCalendar = Calendar.getInstance()
+        var startMoment = startCalendar.time
+        var endMoment = endCalendar.time
 
         // Get weather data from intent
         val tempValue = intent.getIntExtra("Temperature", 0)
         val weatherDescription = intent.getStringExtra("WeatherDescription") ?: ""
         val windSpeed = intent.getFloatExtra("WindSpeed", 0f)
-        val humidity = intent.getIntExtra("Humidity", 0)
+        val rainChance = intent.getIntExtra("RainChance", 0)
 
+        // Set up time picker listeners
         timePicker.setOnTimeChangedListener { _, hourOfDay, minute ->
-            calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
-            calendar.set(Calendar.MINUTE, minute)
-
-            startMoment = calendar.time
+            startCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+            startCalendar.set(Calendar.MINUTE, minute)
+            startMoment = startCalendar.time
+            android.util.Log.d("TaskActivity", "Start time set to: ${SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(startMoment)}")
         }
-        setContentView(taskBinding.root)
 
         timePicker2.setOnTimeChangedListener { _, hourOfDay, minute ->
-            calendar2.set(Calendar.HOUR_OF_DAY, hourOfDay)
-            calendar2.set(Calendar.MINUTE, minute)
-            endMoment = calendar2.time
+            endCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+            endCalendar.set(Calendar.MINUTE, minute)
+            endMoment = endCalendar.time
+            android.util.Log.d("TaskActivity", "End time set to: ${SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(endMoment)}")
         }
+
+        setContentView(taskBinding.root)
 
         val addCloseImg = addTaskDialog.findViewById<ImageView>(R.id.closeImg)
         addCloseImg.setOnClickListener { addTaskDialog.dismiss() }
@@ -145,10 +150,22 @@ class TaskActivity : AppCompatActivity() {
             }
         })
 
-        //-----------------------------------
         taskBinding.addTaskFABtn.setOnClickListener {
             clearEditText(addETTitle, addETTitleL)
             clearEditText(addETDesc, addETDescL)
+
+            // Reset time pickers to current time
+            val now = Calendar.getInstance()
+            startCalendar.time = now.time
+            endCalendar.time = now.time
+            startMoment = startCalendar.time
+            endMoment = endCalendar.time
+
+            timePicker.hour = now.get(Calendar.HOUR_OF_DAY)
+            timePicker.minute = now.get(Calendar.MINUTE)
+            timePicker2.hour = now.get(Calendar.HOUR_OF_DAY)
+            timePicker2.minute = now.get(Calendar.MINUTE)
+
             addTaskDialog.show()
         }
 
@@ -157,6 +174,8 @@ class TaskActivity : AppCompatActivity() {
             if (validateEditText(addETTitle, addETTitleL)
                 && validateEditText(addETDesc, addETDescL)
             ) {
+                android.util.Log.d("TaskActivity", "Creating new task with title: ${addETTitle.text.toString().trim()}")
+                android.util.Log.d("TaskActivity", "Creating new task with start: ${SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(startMoment)} and end: ${SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(endMoment)}")
 
                 val newTask = Task(
                     UUID.randomUUID().toString(),
@@ -165,6 +184,7 @@ class TaskActivity : AppCompatActivity() {
                     startMoment,
                     endMoment
                 )
+                android.util.Log.d("TaskActivity", "Created task object: $newTask")
                 hideKeyBoard(it)
                 addTaskDialog.dismiss()
                 taskViewModel.insertTask(newTask)
@@ -272,27 +292,40 @@ class TaskActivity : AppCompatActivity() {
             CoroutineScope(Dispatchers.Main).launch {
                 try {
                     val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-                    val tasks = taskViewModel.taskStateFlow.first().data?.first()?.filter { task ->
+                    android.util.Log.d("TaskActivity", "Current date: $today")
+
+                    val taskFlow = taskViewModel.taskStateFlow.first()
+                    android.util.Log.d("TaskActivity", "Task flow status: ${taskFlow.status}")
+
+                    val allTasks = taskFlow.data?.first()
+                    android.util.Log.d("TaskActivity", "All tasks: ${allTasks?.map { it.title }}")
+
+                    val tasks = allTasks?.filter { task ->
                         val taskDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(task.starttime)
+                        android.util.Log.d("TaskActivity", "Comparing task date: $taskDate with today: $today")
                         taskDate == today
                     } ?: emptyList()
 
                     // Create ArrayList of task names
-
                     val taskNames = ArrayList<String>()
                     tasks.forEach { task ->
                         taskNames.add(task.title)
+                        android.util.Log.d("TaskActivity", "Adding task to list: ${task.title}")
                     }
+
+                    // Log the task names we're passing
+                    android.util.Log.d("TaskActivity", "Final task names being passed: $taskNames")
 
                     // Start DisplayClothesActivity with all data
                     val intent = Intent(this@TaskActivity, DisplayClothesActivity::class.java)
                         .putExtra("Temperature", tempValue)
                         .putExtra("WeatherDescription", weatherDescription)
                         .putExtra("WindSpeed", windSpeed)
-                        .putExtra("Humidity", humidity)
+                        .putExtra("RainChance", intent.getIntExtra("RainChance", 0))
                         .putStringArrayListExtra("TaskNames", taskNames)
                     startActivity(intent)
                 } catch (e: Exception) {
+                    android.util.Log.e("TaskActivity", "Error collecting tasks", e)
                     Toast.makeText(this@TaskActivity, "Error collecting tasks: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -368,8 +401,8 @@ class TaskActivity : AppCompatActivity() {
     }
 
     private fun callSortByLiveData() {
-        taskViewModel.sortByLiveData.observe(this) {
-            taskViewModel.getTaskList()
+        taskViewModel.sortByLiveData.observe(this) { sortPair ->
+            taskViewModel.getTaskList(sortPair.second, sortPair.first)
         }
     }
 
@@ -421,14 +454,10 @@ class TaskActivity : AppCompatActivity() {
     }
 
 
-    private fun callGetTaskList(taskRecyclerViewAdapter: TaskRVVBListAdapter) {
-
+    private fun callGetTaskList(taskRVVBListAdapter: TaskRVVBListAdapter) {
         CoroutineScope(Dispatchers.Main).launch {
-            taskViewModel
-                .taskStateFlow
-                .collectLatest {
-                    Log.d("status", it.status.toString())
-
+            try {
+                taskViewModel.taskStateFlow.collectLatest {
                     when (it.status) {
                         Util.Status.LOADING -> {
                             loadingDialog.show()
@@ -437,7 +466,7 @@ class TaskActivity : AppCompatActivity() {
                         Util.Status.SUCCESS -> {
                             loadingDialog.dismiss()
                             it.data?.collect { taskList ->
-                                taskRecyclerViewAdapter.submitList(taskList)
+                                taskRVVBListAdapter.submitList(taskList)
                             }
                         }
 
@@ -446,8 +475,12 @@ class TaskActivity : AppCompatActivity() {
                             it.message?.let { it1 -> longToastShow(it1) }
                         }
                     }
-
                 }
+            } catch (e: Exception) {
+                android.util.Log.e("TaskActivity", "Error collecting tasks", e)
+                loadingDialog.dismiss()
+                Toast.makeText(this@TaskActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

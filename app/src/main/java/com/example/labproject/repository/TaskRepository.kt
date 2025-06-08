@@ -45,14 +45,19 @@ class TaskRepository(application: Application) {
         _sortByLiveData.postValue(sort)
     }
 
-    fun getTaskList() {
+    fun getTaskList(isAsc : Boolean, sortByName:String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                android.util.Log.d("TaskRepository", "Starting to get task list")
                 _taskStateFlow.emit(Resource.Loading())
-                delay(500)
+
+                android.util.Log.d("TaskRepository", "Getting tasks with sort: $sortByName, isAsc: $isAsc")
                 val result = taskDao.getTaskList()
+
+                android.util.Log.d("TaskRepository", "Task list retrieved, emitting success")
                 _taskStateFlow.emit(Resource.Success("loading", result))
             } catch (e: Exception) {
+                android.util.Log.e("TaskRepository", "Error getting task list", e)
                 _taskStateFlow.emit(Error(e.message.toString()))
             }
         }
@@ -63,10 +68,13 @@ class TaskRepository(application: Application) {
         try {
             _statusLiveData.postValue(Loading())
             CoroutineScope(Dispatchers.IO).launch {
+                android.util.Log.d("TaskRepository", "Inserting task: ${task.title}")
                 val result = taskDao.insertTask(task)
+                android.util.Log.d("TaskRepository", "Insert result: $result")
                 handleResult(result.toInt(), "Inserted Task Successfully", Util.StatusResult.Added)
             }
         } catch (e: Exception) {
+            android.util.Log.e("TaskRepository", "Error inserting task", e)
             _statusLiveData.postValue(Error(e.message.toString()))
         }
     }

@@ -183,7 +183,7 @@ class DisplayClothesActivity : AppCompatActivity() {
                         .putExtra("Temperature", tempValue)
                         .putExtra("WeatherDescription", weatherDescription)
                         .putExtra("WindSpeed", windSpeed)
-                        .putExtra("Humidity", humidity)
+                        .putExtra("RainChance", intent.getIntExtra("RainChance", 0))
                         .putStringArrayListExtra("TaskNames", taskNames)
                         .putStringArrayListExtra("ClothingItems", clothingItemNames)
                     startActivity(intent)

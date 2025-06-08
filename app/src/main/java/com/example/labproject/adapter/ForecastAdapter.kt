@@ -53,4 +53,13 @@ class ForecastAdapter : RecyclerView.Adapter<ForecastAdapter.ForecastViewHolder>
         forecastList = newForecast
         notifyDataSetChanged()
     }
+
+    fun getCurrentRainChance(): Int {
+        // Return the rain chance of the first forecast item (current/nearest time)
+        return if (forecastList.isNotEmpty()) {
+            (forecastList[0].pop * 100).roundToInt()
+        } else {
+            0 // Default value if no forecast data is available
+        }
+    }
 }
