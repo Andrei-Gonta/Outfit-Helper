@@ -45,7 +45,7 @@ class TaskRepository(application: Application) {
         _sortByLiveData.postValue(sort)
     }
 
-    fun getTaskList(isAsc : Boolean, sortByName:String) {
+    fun getTaskList() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 _taskStateFlow.emit(Resource.Loading())

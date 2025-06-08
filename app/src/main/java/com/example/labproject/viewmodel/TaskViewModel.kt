@@ -17,8 +17,8 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
         taskRepository.setSortBy(sort)
     }
 
-    fun getTaskList(isAsc : Boolean, sortByName:String) {
-        taskRepository.getTaskList(isAsc, sortByName)
+    fun getTaskList() {
+        taskRepository.getTaskList()
     }
 
     fun insertTask(task: Task){

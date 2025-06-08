@@ -91,6 +91,9 @@ class DisplayClothesActivity : AppCompatActivity() {
         val humidity = intent.getIntExtra("Humidity", 0)
         val taskNames = intent.getStringArrayListExtra("TaskNames") ?: ArrayList()
 
+        // Log received task names
+        android.util.Log.d("DisplayClothesActivity", "Received task names: $taskNames")
+
         // Remove dialog initialization since we won't need it
         val updateCloseImg = updateClothingItemDialog.findViewById<ImageView>(R.id.closeImg)
         updateCloseImg.setOnClickListener { updateClothingItemDialog.dismiss() }
@@ -171,6 +174,9 @@ class DisplayClothesActivity : AppCompatActivity() {
                     clothingItems.forEach { item ->
                         clothingItemNames.add(item.name)
                     }
+
+                    // Log what we're passing to ResultActivity
+                    android.util.Log.d("DisplayClothesActivity", "Passing task names to ResultActivity: $taskNames")
 
                     // Start ResultActivity with all collected data
                     val intent = Intent(this@DisplayClothesActivity, ResultActivity::class.java)

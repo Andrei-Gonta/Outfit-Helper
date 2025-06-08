@@ -351,7 +351,7 @@ class TaskSimpleActivity : AppCompatActivity() {
 
     private fun callSortByLiveData() {
         taskViewModel.sortByLiveData.observe(this) {
-            taskViewModel.getTaskList(it.second, it.first)
+            taskViewModel.getTaskList()
         }
     }
 

@@ -278,6 +278,7 @@ class TaskActivity : AppCompatActivity() {
                     } ?: emptyList()
 
                     // Create ArrayList of task names
+
                     val taskNames = ArrayList<String>()
                     tasks.forEach { task ->
                         taskNames.add(task.title)
@@ -368,7 +369,7 @@ class TaskActivity : AppCompatActivity() {
 
     private fun callSortByLiveData() {
         taskViewModel.sortByLiveData.observe(this) {
-            taskViewModel.getTaskList(it.second, it.first)
+            taskViewModel.getTaskList()
         }
     }
 
