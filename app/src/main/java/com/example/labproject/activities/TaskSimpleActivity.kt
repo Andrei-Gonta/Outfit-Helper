@@ -97,7 +97,10 @@ class TaskSimpleActivity : AppCompatActivity() {
         val calendar = Calendar.getInstance()
         var myDate = calendar.time
 
-        val temp_value = intent.getIntExtra("Temprature", 0)
+        val temp_value = intent.getIntExtra("Temperature", 0)
+        val weatherDescription = intent.getStringExtra("WeatherDescription") ?: ""
+        val windSpeed = intent.getFloatExtra("WindSpeed", 0f)
+        val humidity = intent.getIntExtra("Humidity", 0)
 
         //timePicker.setIs24HourView(true)
         timePicker.setOnTimeChangedListener { _, hourOfDay, minute ->
@@ -140,8 +143,11 @@ class TaskSimpleActivity : AppCompatActivity() {
 
 
         taskSimpleBinding.nextFABtn.setOnClickListener {
-            val intent = Intent(this, DisplayClothesSimpleActivity::class.java).putExtra("Temprature", temp_value)
-
+            val intent = Intent(this, ResultActivity::class.java)
+                .putExtra("Temperature", temp_value)
+                .putExtra("WeatherDescription", weatherDescription)
+                .putExtra("WindSpeed", windSpeed)
+                .putExtra("Humidity", humidity)
             startActivity(intent)
         }
 

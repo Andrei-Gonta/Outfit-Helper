@@ -21,6 +21,7 @@ import com.example.labproject.activities.DisplayClothesActivity
 import com.example.labproject.activities.TaskActivity
 import com.example.labproject.activities.TaskSimpleActivity
 import com.example.labproject.adapter.RecycleViewAdapter
+import com.example.labproject.adapter.ForecastAdapter
 import com.example.labproject.utils.RetrofitInstance
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -40,6 +41,7 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import androidx.recyclerview.widget.LinearLayoutManager
 
 @Suppress("DEPRECATION")
 class MainActivity : AppCompatActivity() {
@@ -54,6 +56,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
+    private lateinit var forecastAdapter: ForecastAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,21 +66,36 @@ class MainActivity : AppCompatActivity() {
         dialog.setContentView(sheetLayoutBinding.root)
         setContentView(binding.root)
 
+        // Initialize forecast RecyclerView
+        forecastAdapter = ForecastAdapter()
+        binding.rvForecast.apply {
+            layoutManager = LinearLayoutManager(this@MainActivity, LinearLayoutManager.HORIZONTAL, false)
+            adapter = forecastAdapter
+        }
+
         val temperature = binding.tvTemp.text.toString()
 
         val temp_value = temperature
         binding.btnDisplayWaredrobe.setOnClickListener {
             val intent = Intent(this, DisplayClothesActivity::class.java)
+                .putExtra("Temperature", binding.tvTemp.text.toString().replace("°C", "").toInt())
+                .putExtra("WeatherDescription", binding.tvStatus.text.toString())
+
             startActivity(intent)
         }
 
         binding.btnDisplaySchedule.setOnClickListener {
             val intent = Intent(this, TaskActivity::class.java)
+                .putExtra("Temperature", binding.tvTemp.text.toString().replace("°C", "").toInt())
+                .putExtra("WeatherDescription", binding.tvStatus.text.toString())
+
             startActivity(intent)
         }
 
         binding.btnStart.setOnClickListener {
-            val intent = Intent(this, TaskSimpleActivity::class.java).putExtra("Temprature", temp_value)
+            val intent = Intent(this, TaskActivity::class.java)
+                .putExtra("Temperature", binding.tvTemp.text.toString().replace("°C", "").toInt())
+                .putExtra("WeatherDescription", binding.tvStatus.text.toString())
 
             startActivity(intent)
         }
@@ -143,44 +161,57 @@ class MainActivity : AppCompatActivity() {
     @OptIn(DelicateCoroutinesApi::class)
     private fun getCurrentWeather(city: String) {
         GlobalScope.launch(Dispatchers.IO) {
-            val response = try {
-                RetrofitInstance.api.getCurrentWeather(
+            try {
+                // Get current weather
+                val weatherResponse = RetrofitInstance.api.getCurrentWeather(
                     city,
                     "metric",
                     applicationContext.getString(R.string.api_key)
                 )
-            } catch (e: IOException) {
-                Toast.makeText(applicationContext, "app error ${e.message}", Toast.LENGTH_SHORT)
-                    .show()
-                return@launch
-            } catch (e: HttpException) {
-                Toast.makeText(applicationContext, "http error ${e.message}", Toast.LENGTH_SHORT)
-                    .show()
-                return@launch
-            }
 
-            if (response.isSuccessful && response.body() != null) {
-                withContext(Dispatchers.Main) {
+                // Get forecast
+                val forecastResponse = RetrofitInstance.api.getForecast(
+                    city,
+                    "metric",
+                    applicationContext.getString(R.string.api_key)
+                )
 
-                    val data = response.body()!!
-                    val iconId = data.weather[0].icon
-                    val imgUrl = "https://openweathermap.org/img/wn/$iconId@4x.png"
+                if (weatherResponse.isSuccessful && weatherResponse.body() != null &&
+                    forecastResponse.isSuccessful && forecastResponse.body() != null) {
+                    withContext(Dispatchers.Main) {
+                        // Update current weather UI
+                        val data = weatherResponse.body()!!
+                        val iconId = data.weather[0].icon
+                        val imgUrl = "https://openweathermap.org/img/wn/$iconId@4x.png"
 
-                    Picasso.get().load(imgUrl).into(binding.imgWeather)
+                        Picasso.get().load(imgUrl).into(binding.imgWeather)
 
-                    binding.apply {
-                        tvStatus.text = data.weather[0].description
-                        tvLocation.text = "${data.name}\n${data.sys.country}"
-                        tvTemp.text = "${data.main.temp.toInt()}°C"
-                        tvFeelsLike.text = "Feels like: ${data.main.feels_like.toInt()}°C"
-                        tvMinTemp.text = "Min temp: ${data.main.temp_min.toInt()}°C"
-                        tvMaxTemp.text = "Max temp: ${data.main.temp_max.toInt()}°C"
-                        tvUpdateTime.text = "Last Update: ${
-                            dateFormatConverter(
-                                data.dt.toLong()
-                            )
-                        }"
+                        binding.apply {
+                            tvStatus.text = data.weather[0].description
+                            tvLocation.text = "${data.name}\n${data.sys.country}"
+                            tvTemp.text = "${data.main.temp.toInt()}°C"
+                            tvFeelsLike.text = "Feels like: ${data.main.feels_like.toInt()}°C"
+                            tvMinTemp.text = "Min temp: ${data.main.temp_min.toInt()}°C"
+                            tvMaxTemp.text = "Max temp: ${data.main.temp_max.toInt()}°C"
+                            tvUpdateTime.text = "Last Update: ${
+                                dateFormatConverter(
+                                    data.dt.toLong()
+                                )
+                            }"
+                        }
+
+                        // Update forecast UI
+                        val forecastData = forecastResponse.body()!!
+                        forecastAdapter.updateForecast(forecastData.list.take(24)) // Show next 24 hours
                     }
+                }
+            } catch (e: IOException) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(applicationContext, "app error ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: HttpException) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(applicationContext, "http error ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
         }

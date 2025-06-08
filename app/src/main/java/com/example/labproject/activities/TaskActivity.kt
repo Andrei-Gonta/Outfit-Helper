@@ -50,10 +50,13 @@ import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Date
 import java.util.UUID
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class TaskActivity : AppCompatActivity() {
     private val taskBinding: ActivityTaskBinding by lazy {
@@ -97,175 +100,334 @@ class TaskActivity : AppCompatActivity() {
         val calendar2 = Calendar.getInstance()
         var endMoment = calendar2.time
 
-        val temp_value = intent.getIntExtra("Temprature", 0)
+        // Get weather data from intent
+        val tempValue = intent.getIntExtra("Temperature", 0)
+        val weatherDescription = intent.getStringExtra("WeatherDescription") ?: ""
+        val windSpeed = intent.getFloatExtra("WindSpeed", 0f)
+        val humidity = intent.getIntExtra("Humidity", 0)
 
         timePicker.setOnTimeChangedListener { _, hourOfDay, minute ->
             calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
             calendar.set(Calendar.MINUTE, minute)
 
-             startMoment = calendar.time
-             }
-            setContentView(taskBinding.root)
+            startMoment = calendar.time
+        }
+        setContentView(taskBinding.root)
 
         timePicker2.setOnTimeChangedListener { _, hourOfDay, minute ->
             calendar2.set(Calendar.HOUR_OF_DAY, hourOfDay)
             calendar2.set(Calendar.MINUTE, minute)
-           endMoment = calendar2.time
+            endMoment = calendar2.time
         }
 
-            val addCloseImg = addTaskDialog.findViewById<ImageView>(R.id.closeImg)
-            addCloseImg.setOnClickListener { addTaskDialog.dismiss() }
+        val addCloseImg = addTaskDialog.findViewById<ImageView>(R.id.closeImg)
+        addCloseImg.setOnClickListener { addTaskDialog.dismiss() }
 
-            val addETTitle = addTaskDialog.findViewById<TextInputEditText>(R.id.edTaskTitle)
-            val addETTitleL = addTaskDialog.findViewById<TextInputLayout>(R.id.edTaskTitleL)
+        val addETTitle = addTaskDialog.findViewById<TextInputEditText>(R.id.edTaskTitle)
+        val addETTitleL = addTaskDialog.findViewById<TextInputLayout>(R.id.edTaskTitleL)
 
-            addETTitle.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-                override fun afterTextChanged(s: Editable) {
-                    validateEditText(addETTitle, addETTitleL)
-                }
-            })
-
-            val addETDesc = addTaskDialog.findViewById<TextInputEditText>(R.id.edTaskDesc)
-            val addETDescL = addTaskDialog.findViewById<TextInputLayout>(R.id.edTaskDescL)
-
-            addETDesc.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-                override fun afterTextChanged(s: Editable) {
-                   validateEditText(addETDesc, addETDescL)
-                }
-            })
-
-            //-----------------------------------
-            taskBinding.addTaskFABtn.setOnClickListener {
-                clearEditText(addETTitle, addETTitleL)
-                clearEditText(addETDesc, addETDescL)
-                addTaskDialog.show()
+        addETTitle.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun afterTextChanged(s: Editable) {
+                validateEditText(addETTitle, addETTitleL)
             }
+        })
 
-            val saveTaskBtn = addTaskDialog.findViewById<Button>(R.id.saveTaskBtn)
-            saveTaskBtn.setOnClickListener {
-                if (validateEditText(addETTitle, addETTitleL)
-                    && validateEditText(addETDesc, addETDescL)
-                ) {
+        val addETDesc = addTaskDialog.findViewById<TextInputEditText>(R.id.edTaskDesc)
+        val addETDescL = addTaskDialog.findViewById<TextInputLayout>(R.id.edTaskDescL)
 
-                    val newTask = Task(
-                        UUID.randomUUID().toString(),
-                        addETTitle.text.toString().trim(),
-                        addETDesc.text.toString().trim(),
-                        startMoment,
-                        endMoment
-                    )
-                    hideKeyBoard(it)
-                    addTaskDialog.dismiss()
-                    taskViewModel.insertTask(newTask)
+        addETDesc.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun afterTextChanged(s: Editable) {
+                validateEditText(addETDesc, addETDescL)
+            }
+        })
+
+        //-----------------------------------
+        taskBinding.addTaskFABtn.setOnClickListener {
+            clearEditText(addETTitle, addETTitleL)
+            clearEditText(addETDesc, addETDescL)
+            addTaskDialog.show()
+        }
+
+        val saveTaskBtn = addTaskDialog.findViewById<Button>(R.id.saveTaskBtn)
+        saveTaskBtn.setOnClickListener {
+            if (validateEditText(addETTitle, addETTitleL)
+                && validateEditText(addETDesc, addETDescL)
+            ) {
+
+                val newTask = Task(
+                    UUID.randomUUID().toString(),
+                    addETTitle.text.toString().trim(),
+                    addETDesc.text.toString().trim(),
+                    startMoment,
+                    endMoment
+                )
+                hideKeyBoard(it)
+                addTaskDialog.dismiss()
+                taskViewModel.insertTask(newTask)
+            }
+        }
+
+        val updateETTitle = updateTaskDialog.findViewById<TextInputEditText>(R.id.edTaskTitle)
+        val updateETTitleL = updateTaskDialog.findViewById<TextInputLayout>(R.id.edTaskTitleL)
+
+        updateETTitle.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun afterTextChanged(s: Editable) {
+                validateEditText(updateETTitle, updateETTitleL)
+            }
+        })
+
+        val updateETDesc = updateTaskDialog.findViewById<TextInputEditText>(R.id.edTaskDesc)
+        val updateETDescL = updateTaskDialog.findViewById<TextInputLayout>(R.id.edTaskDescL)
+
+        updateETDesc.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun afterTextChanged(s: Editable) {
+                validateEditText(updateETDesc, updateETDescL)
+            }
+        })
+
+        val updateCloseImg = updateTaskDialog.findViewById<ImageView>(R.id.closeImg)
+        updateCloseImg.setOnClickListener { updateTaskDialog.dismiss() }
+
+        val updateTaskBtn = updateTaskDialog.findViewById<Button>(R.id.updateTaskBtn)
+
+
+
+        isListMutableLiveData.observe(this) {
+            if (it) {
+                taskBinding.taskRV.layoutManager = LinearLayoutManager(
+                    this, LinearLayoutManager.VERTICAL, false
+                )
+                taskBinding.listOrGridImg.setImageResource(R.drawable.ic_view_module)
+            } else {
+                taskBinding.taskRV.layoutManager = StaggeredGridLayoutManager(
+                    2, LinearLayoutManager.VERTICAL
+                )
+                taskBinding.listOrGridImg.setImageResource(R.drawable.ic_view_list)
+            }
+        }
+
+        taskBinding.listOrGridImg.setOnClickListener {
+            isListMutableLiveData.postValue(!isListMutableLiveData.value!!)
+        }
+
+        val taskRVVBListAdapter =
+            TaskRVVBListAdapter(isListMutableLiveData) { type, position, task ->
+                if (type == "delete") {
+                    taskViewModel
+                        .deleteTaskUsingId(task.id)
+                    restoreDeletedTask(task)
+                } else if (type == "update") {
+                    updateETTitle.setText(task.title)
+                    updateETDesc.setText(task.description)
+                    updateTaskBtn.setOnClickListener {
+                        if (validateEditText(updateETTitle, updateETTitleL)
+                            && validateEditText(updateETDesc, updateETDescL)
+                        ) {
+                            val updateTask = Task(
+                                task.id,
+                                updateETTitle.text.toString().trim(),
+                                updateETDesc.text.toString().trim(),
+                                startMoment,
+                                endMoment
+                            )
+                            hideKeyBoard(it)
+                            updateTaskDialog.dismiss()
+                            taskViewModel
+                                .updateTask(updateTask)
+                        }
+                    }
+                    updateTaskDialog.show()
                 }
             }
-
-            val updateETTitle = updateTaskDialog.findViewById<TextInputEditText>(R.id.edTaskTitle)
-            val updateETTitleL = updateTaskDialog.findViewById<TextInputLayout>(R.id.edTaskTitleL)
-
-            updateETTitle.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-                override fun afterTextChanged(s: Editable) {
-                    validateEditText(updateETTitle, updateETTitleL)
-                }
-            })
-
-            val updateETDesc = updateTaskDialog.findViewById<TextInputEditText>(R.id.edTaskDesc)
-            val updateETDescL = updateTaskDialog.findViewById<TextInputLayout>(R.id.edTaskDescL)
-
-            updateETDesc.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-                override fun afterTextChanged(s: Editable) {
-                    validateEditText(updateETDesc, updateETDescL)
-                }
-            })
-
-            val updateCloseImg = updateTaskDialog.findViewById<ImageView>(R.id.closeImg)
-            updateCloseImg.setOnClickListener { updateTaskDialog.dismiss() }
-
-            val updateTaskBtn = updateTaskDialog.findViewById<Button>(R.id.updateTaskBtn)
+        taskBinding.taskRV.adapter = taskRVVBListAdapter
+        ViewCompat.setNestedScrollingEnabled(taskBinding.taskRV, false)
+        taskRVVBListAdapter.registerAdapterDataObserver(object :
+            RecyclerView.AdapterDataObserver() {
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                super.onItemRangeInserted(positionStart, itemCount)
+                taskBinding.nestedScrollView.smoothScrollTo(0, positionStart)
+            }
+        })
 
 
 
-            isListMutableLiveData.observe(this) {
-                if (it) {
-                    taskBinding.taskRV.layoutManager = LinearLayoutManager(
-                        this, LinearLayoutManager.VERTICAL, false
-                    )
-                    taskBinding.listOrGridImg.setImageResource(R.drawable.ic_view_module)
-                } else {
-                    taskBinding.taskRV.layoutManager = StaggeredGridLayoutManager(
-                        2, LinearLayoutManager.VERTICAL
-                    )
-                    taskBinding.listOrGridImg.setImageResource(R.drawable.ic_view_list)
+
+
+
+        callGetTaskList(taskRVVBListAdapter)
+        callSortByLiveData()
+        statusCallback()
+        callSearch()
+
+        taskBinding.nextFABtn.setOnClickListener {
+            // Collect all tasks for today
+            CoroutineScope(Dispatchers.Main).launch {
+                try {
+                    val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+                    val tasks = taskViewModel.taskStateFlow.first().data?.first()?.filter { task ->
+                        val taskDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(task.starttime)
+                        taskDate == today
+                    } ?: emptyList()
+
+                    // Create ArrayList of task names
+                    val taskNames = ArrayList<String>()
+                    tasks.forEach { task ->
+                        taskNames.add(task.title)
+                    }
+
+                    // Start DisplayClothesActivity with all data
+                    val intent = Intent(this@TaskActivity, DisplayClothesActivity::class.java)
+                        .putExtra("Temperature", tempValue)
+                        .putExtra("WeatherDescription", weatherDescription)
+                        .putExtra("WindSpeed", windSpeed)
+                        .putExtra("Humidity", humidity)
+                        .putStringArrayListExtra("TaskNames", taskNames)
+                    startActivity(intent)
+                } catch (e: Exception) {
+                    Toast.makeText(this@TaskActivity, "Error collecting tasks: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
+        }
+    }
 
-            taskBinding.listOrGridImg.setOnClickListener {
-                isListMutableLiveData.postValue(!isListMutableLiveData.value!!)
-            }
 
-            val taskRVVBListAdapter =
-                TaskRVVBListAdapter(isListMutableLiveData) { type, position, task ->
-                    if (type == "delete") {
-                        taskViewModel
-                            .deleteTaskUsingId(task.id)
-                        restoreDeletedTask(task)
-                    } else if (type == "update") {
-                        updateETTitle.setText(task.title)
-                        updateETDesc.setText(task.description)
-                        updateTaskBtn.setOnClickListener {
-                            if (validateEditText(updateETTitle, updateETTitleL)
-                                && validateEditText(updateETDesc, updateETDescL)
-                            ) {
-                                val updateTask = Task(
-                                    task.id,
-                                    updateETTitle.text.toString().trim(),
-                                    updateETDesc.text.toString().trim(),
-                                    startMoment,
-                                    endMoment
-                                )
-                                hideKeyBoard(it)
-                                updateTaskDialog.dismiss()
-                                taskViewModel
-                                    .updateTask(updateTask)
+    private fun statusCallback() {
+        taskViewModel
+            .statusLiveData
+            .observe(this) {
+                when (it.status) {
+                    Util.Status.LOADING -> {
+                        loadingDialog.show()
+                    }
+
+                    Util.Status.SUCCESS -> {
+                        loadingDialog.dismiss()
+                        when (it.data as Util.StatusResult) {
+                            Util.StatusResult.Added -> {
+                                Log.d("StatusResult", "Added")
+                            }
+
+                            Util.StatusResult.Deleted -> {
+                                Log.d("StatusResult", "Deleted")
+
+                            }
+
+                            Util.StatusResult.Updated -> {
+                                Log.d("StatusResult", "Updated")
+
                             }
                         }
-                        updateTaskDialog.show()
+                        it.message?.let { it1 -> longToastShow(it1) }
+                    }
+
+                    Util.Status.ERROR -> {
+                        loadingDialog.dismiss()
+                        it.message?.let { it1 -> longToastShow(it1) }
                     }
                 }
-            taskBinding.taskRV.adapter = taskRVVBListAdapter
-            ViewCompat.setNestedScrollingEnabled(taskBinding.taskRV, false)
-            taskRVVBListAdapter.registerAdapterDataObserver(object :
-                RecyclerView.AdapterDataObserver() {
-                override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-                    super.onItemRangeInserted(positionStart, itemCount)
-                    taskBinding.nestedScrollView.smoothScrollTo(0, positionStart)
+            }
+    }
+
+
+    //--------------------------------
+
+
+    private fun callSearch() {
+        taskBinding.edSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+            override fun afterTextChanged(query: Editable) {
+                if (query.toString().isNotEmpty()) {
+                    taskViewModel.searchTaskList(query.toString())
+                } else {
+                    callSortByLiveData()
                 }
-            })
+            }
+        })
 
-
-
-
-
-
-            callGetTaskList(taskRVVBListAdapter)
-            callSortByLiveData()
-            statusCallback()
-            callSearch()
+        taskBinding.edSearch.setOnEditorActionListener { v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                hideKeyBoard(v)
+                return@setOnEditorActionListener true
+            }
+            false
         }
 
+        callSortByDialog()
+    }
 
-        private fun statusCallback() {
+    private fun callSortByLiveData() {
+        taskViewModel.sortByLiveData.observe(this) {
+            taskViewModel.getTaskList(it.second, it.first)
+        }
+    }
+
+    private fun callSortByDialog() {
+        var checkedItem = 0   // 2 is default item set
+        val items =
+            arrayOf("Title Ascending", "Title Descending", "Date Ascending", "Date Descending")
+
+        taskBinding.sortImg.setOnClickListener {
+            MaterialAlertDialogBuilder(this)
+                .setTitle("Sort By")
+                .setPositiveButton("Ok") { _, _ ->
+                    when (checkedItem) {
+                        0 -> {
+                            taskViewModel.setSortBy(Pair("title", true))
+                        }
+
+                        1 -> {
+                            taskViewModel.setSortBy(Pair("title", false))
+                        }
+
+                        2 -> {
+                            taskViewModel.setSortBy(Pair("starttime", true))
+                        }
+
+                        else -> {
+                            taskViewModel.setSortBy(Pair("start_time", false))
+                        }
+                    }
+                }
+                .setSingleChoiceItems(items, checkedItem) { _, selectedItemIndex ->
+                    checkedItem = selectedItemIndex
+                }
+                .setCancelable(false)
+                .show()
+        }
+    }
+
+
+    private fun restoreDeletedTask(deletedTask: Task) {
+        val snackBar = Snackbar.make(
+            taskBinding.root, "Deleted '${deletedTask.title}'",
+            Snackbar.LENGTH_LONG
+        )
+        snackBar.setAction("Undo") {
+            taskViewModel.insertTask(deletedTask)
+        }
+        snackBar.show()
+    }
+
+
+    private fun callGetTaskList(taskRecyclerViewAdapter: TaskRVVBListAdapter) {
+
+        CoroutineScope(Dispatchers.Main).launch {
             taskViewModel
-                .statusLiveData
-                .observe(this) {
+                .taskStateFlow
+                .collectLatest {
+                    Log.d("status", it.status.toString())
+
                     when (it.status) {
                         Util.Status.LOADING -> {
                             loadingDialog.show()
@@ -273,22 +435,9 @@ class TaskActivity : AppCompatActivity() {
 
                         Util.Status.SUCCESS -> {
                             loadingDialog.dismiss()
-                            when (it.data as Util.StatusResult) {
-                                Util.StatusResult.Added -> {
-                                    Log.d("StatusResult", "Added")
-                                }
-
-                                Util.StatusResult.Deleted -> {
-                                    Log.d("StatusResult", "Deleted")
-
-                                }
-
-                                Util.StatusResult.Updated -> {
-                                    Log.d("StatusResult", "Updated")
-
-                                }
+                            it.data?.collect { taskList ->
+                                taskRecyclerViewAdapter.submitList(taskList)
                             }
-                            it.message?.let { it1 -> longToastShow(it1) }
                         }
 
                         Util.Status.ERROR -> {
@@ -296,124 +445,12 @@ class TaskActivity : AppCompatActivity() {
                             it.message?.let { it1 -> longToastShow(it1) }
                         }
                     }
+
                 }
         }
-
-
-        //--------------------------------
-
-
-        private fun callSearch() {
-            taskBinding.edSearch.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-                override fun afterTextChanged(query: Editable) {
-                    if (query.toString().isNotEmpty()) {
-                        taskViewModel.searchTaskList(query.toString())
-                    } else {
-                        callSortByLiveData()
-                    }
-                }
-            })
-
-            taskBinding.edSearch.setOnEditorActionListener { v, actionId, event ->
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    hideKeyBoard(v)
-                    return@setOnEditorActionListener true
-                }
-                false
-            }
-
-            callSortByDialog()
-        }
-
-        private fun callSortByLiveData() {
-            taskViewModel.sortByLiveData.observe(this) {
-                taskViewModel.getTaskList(it.second, it.first)
-            }
-        }
-
-        private fun callSortByDialog() {
-            var checkedItem = 0   // 2 is default item set
-            val items =
-                arrayOf("Title Ascending", "Title Descending", "Date Ascending", "Date Descending")
-
-            taskBinding.sortImg.setOnClickListener {
-                MaterialAlertDialogBuilder(this)
-                    .setTitle("Sort By")
-                    .setPositiveButton("Ok") { _, _ ->
-                        when (checkedItem) {
-                            0 -> {
-                                taskViewModel.setSortBy(Pair("title", true))
-                            }
-
-                            1 -> {
-                                taskViewModel.setSortBy(Pair("title", false))
-                            }
-
-                            2 -> {
-                                taskViewModel.setSortBy(Pair("starttime", true))
-                            }
-
-                            else -> {
-                                taskViewModel.setSortBy(Pair("start_time", false))
-                            }
-                        }
-                    }
-                    .setSingleChoiceItems(items, checkedItem) { _, selectedItemIndex ->
-                        checkedItem = selectedItemIndex
-                    }
-                    .setCancelable(false)
-                    .show()
-            }
-        }
-
-
-        private fun restoreDeletedTask(deletedTask: Task) {
-            val snackBar = Snackbar.make(
-                taskBinding.root, "Deleted '${deletedTask.title}'",
-                Snackbar.LENGTH_LONG
-            )
-            snackBar.setAction("Undo") {
-                taskViewModel.insertTask(deletedTask)
-            }
-            snackBar.show()
-        }
-
-
-        private fun callGetTaskList(taskRecyclerViewAdapter: TaskRVVBListAdapter) {
-
-            CoroutineScope(Dispatchers.Main).launch {
-                taskViewModel
-                    .taskStateFlow
-                    .collectLatest {
-                        Log.d("status", it.status.toString())
-
-                        when (it.status) {
-                            Util.Status.LOADING -> {
-                                loadingDialog.show()
-                            }
-
-                            Util.Status.SUCCESS -> {
-                                loadingDialog.dismiss()
-                                it.data?.collect { taskList ->
-                                    taskRecyclerViewAdapter.submitList(taskList)
-                                }
-                            }
-
-                            Util.Status.ERROR -> {
-                                loadingDialog.dismiss()
-                                it.message?.let { it1 -> longToastShow(it1) }
-                            }
-                        }
-
-                    }
-            }
-        }
-
     }
+
+}
 
 
 

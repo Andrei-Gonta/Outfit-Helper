@@ -9,12 +9,14 @@ import android.util.Log
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
+
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -40,6 +42,7 @@ import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.Date
 import java.util.UUID
@@ -81,6 +84,13 @@ class DisplayClothesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(clothingItemBinding.root)
 
+        // Get weather data and task names from intent
+        val tempValue = intent.getIntExtra("Temperature", 0)
+        val weatherDescription = intent.getStringExtra("WeatherDescription") ?: ""
+        val windSpeed = intent.getFloatExtra("WindSpeed", 0f)
+        val humidity = intent.getIntExtra("Humidity", 0)
+        val taskNames = intent.getStringArrayListExtra("TaskNames") ?: ArrayList()
+
         // Remove dialog initialization since we won't need it
         val updateCloseImg = updateClothingItemDialog.findViewById<ImageView>(R.id.closeImg)
         updateCloseImg.setOnClickListener { updateClothingItemDialog.dismiss() }
@@ -96,7 +106,7 @@ class DisplayClothesActivity : AppCompatActivity() {
             }
         })
 
-
+        // Launch recognition activity instead of showing dialog
         clothingItemBinding.addClothingItemFABtn.setOnClickListener {
             val intent = Intent(this, RecognitionActivity::class.java)
             startActivity(intent)
@@ -149,6 +159,33 @@ class DisplayClothesActivity : AppCompatActivity() {
         callSortByLiveData()
         statusCallback()
         callSearch()
+
+        clothingItemBinding.nextFABtn.setOnClickListener {
+            // Collect all clothing items
+            CoroutineScope(Dispatchers.Main).launch {
+                try {
+                    val clothingItems = clothingItemViewModel.clothingItemStateFlow.first().data?.first() ?: emptyList()
+
+                    // Create ArrayList of clothing item names
+                    val clothingItemNames = ArrayList<String>()
+                    clothingItems.forEach { item ->
+                        clothingItemNames.add(item.name)
+                    }
+
+                    // Start ResultActivity with all collected data
+                    val intent = Intent(this@DisplayClothesActivity, ResultActivity::class.java)
+                        .putExtra("Temperature", tempValue)
+                        .putExtra("WeatherDescription", weatherDescription)
+                        .putExtra("WindSpeed", windSpeed)
+                        .putExtra("Humidity", humidity)
+                        .putStringArrayListExtra("TaskNames", taskNames)
+                        .putStringArrayListExtra("ClothingItems", clothingItemNames)
+                    startActivity(intent)
+                } catch (e: Exception) {
+                    Toast.makeText(this@DisplayClothesActivity, "Error collecting clothing items: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
 
@@ -291,4 +328,8 @@ class DisplayClothesActivity : AppCompatActivity() {
                 }
         }
     }
+
+
+
+
 }
